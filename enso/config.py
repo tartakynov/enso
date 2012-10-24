@@ -76,3 +76,9 @@ PLUGINS = ["enso.contrib.scriptotron",
            "enso.contrib.help",
            "enso.contrib.google",
            "enso.contrib.evaluate"]
+
+# Detect default system locale and use it for google search.
+# If set to False, no locale is forced.
+PLUGIN_GOOGLE_USE_DEFAULT_LOCALE = True
+
+# vim:set tabstop=4 shiftwidth=4 expandtab:

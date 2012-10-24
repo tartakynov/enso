@@ -65,6 +65,7 @@ env.addLib(
     includePath = "",
     libPath = "",
     PYCAIRO_LIB_NAME = "_cairo",
+    #SHLIBSUFFIX = ".pyd",
     )
 
 
@@ -76,7 +77,3 @@ SConscript( "freetype2/SConscript", exports="env" )
 SConscript( "cairo/SConscript", exports="env" )
 SConscript( "pycairo/cairo/SConscript", exports="env" )
 SConscript( "TransparentWindow/SConscript", exports="env" )
-
-
-
-

@@ -277,7 +277,7 @@ class GenericPrefixFactory( AbstractCommandFactory ):
         if len(matches) < 1:
             return None
         match = matches[0]
-        matchLocation = re.search( pattern, match ).start()
+        matchLocation = re.search( pattern, match, re.I ).start()
 
         newUserText = self.PREFIX
         start = matchLocation
@@ -309,9 +309,10 @@ class GenericPrefixFactory( AbstractCommandFactory ):
 
         # re.M means that "multiline mode" is used, so "." does not
         # match newlines.
+        # re.I matches case-insensitively
         matches = re.findall( pattern = "^" + pattern +".*$",
                               string = self.__searchString,
-                              flags = re.M )
+                              flags = re.M | re.I )
         matches = [ m for m in matches if len(m) > 0 ]
         matches.sort()
         return matches

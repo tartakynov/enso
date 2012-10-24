@@ -103,7 +103,7 @@ static PyMethodDef font_face_methods[] = {
 PyTypeObject PycairoFontFace_Type = {
     PyObject_HEAD_INIT(NULL)
     0,                                  /* ob_size */
-    "enso_win32.cairo.FontFace",                   /* tp_name */
+    "enso.platform.win32.cairo.FontFace",                   /* tp_name */
     sizeof(PycairoFontFace),            /* tp_basicsize */
     0,                                  /* tp_itemsize */
     (destructor)font_face_dealloc,      /* tp_dealloc */
@@ -253,7 +253,7 @@ static PyMethodDef scaled_font_methods[] = {
 PyTypeObject PycairoScaledFont_Type = {
     PyObject_HEAD_INIT(NULL)
     0,                                  /* ob_size */
-    "enso_win32.cairo.ScaledFont",                 /* tp_name */
+    "enso.platform.win32.cairo.ScaledFont",                 /* tp_name */
     sizeof(PycairoScaledFont),          /* tp_basicsize */
     0,                                  /* tp_itemsize */
     (destructor)scaled_font_dealloc,    /* tp_dealloc */
@@ -379,7 +379,7 @@ static PyMethodDef font_options_methods[] = {
 PyTypeObject PycairoFontOptions_Type = {
     PyObject_HEAD_INIT(NULL)
     0,                                  /* ob_size */
-    "enso_win32.cairo.FontOptions",                /* tp_name */
+    "enso.platform.win32.cairo.FontOptions",                /* tp_name */
     sizeof(PycairoFontOptions),         /* tp_basicsize */
     0,                                  /* tp_itemsize */
     (destructor)font_options_dealloc,   /* tp_dealloc */

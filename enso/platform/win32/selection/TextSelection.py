@@ -212,7 +212,7 @@ class AbstractTextSelection:
 
         # Try to get HTML from clipboard:
         if win32clipboard.IsClipboardFormatAvailable( CF_HTML ):
-            debugMsg( "HTML is available, getting it." )
+            logging.debug( "HTML is available, getting it." )
             formatText = win32clipboard.GetClipboardData( CF_HTML )
         else:
             formatText = None

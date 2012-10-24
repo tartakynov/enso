@@ -39,14 +39,17 @@
 # ----------------------------------------------------------------------------
 # Imports
 # ----------------------------------------------------------------------------
+from __future__ import with_statement
 
 import os
 import webbrowser
 import tempfile
 import urllib
 import atexit
+import logging
 
 from enso.commands import CommandManager, CommandObject
+from enso.contrib.scriptotron.tracebacks import safetyNetted
 
 
 # ----------------------------------------------------------------------------
@@ -76,25 +79,29 @@ class DefaultHtmlHelp( object ):
         self._cmdMan = commandManager
 
     def _render( self ):
-        fileobj = open( self.filename, "w" )
-
-        fileobj.write( "<html><head><title>Enso Help</title></head>" )
-        fileobj.write( "<body>" )
-        fileobj.write( "<h1>Enso Help</h1>" )
-        fileobj.write( "<h2>Your Commands</h2>" )
-        for name, command in self._cmdMan.getCommands().items():
-            helpText = command.getHelp()
-            if not helpText:
-                helpText = "This command has no help content."
-            helpText = helpText.encode( "ascii", "xmlcharrefreplace" )
-            fileobj.write( "<b>%s</b>" % name )
-            fileobj.write( "<p>%s</p>" %  helpText )
-        fileobj.write( "</body></html>" )
+        with open( self.filename, "w" ) as fileobj:
+            fileobj.write( "<html><head><title>Enso Help</title></head>" )
+            fileobj.write( "<body>" )
+            fileobj.write( "<h1>Enso Help</h1>" )
+            fileobj.write( "<h2>Your Commands</h2>" )
+            for name, command in self._cmdMan.getCommands().items():
+                helpText = command.getHelp()
+                if not helpText:
+                    helpText = "This command has no help content."
+                helpText = helpText.encode( "ascii", "xmlcharrefreplace" )
+                fileobj.write( "<b>%s</b>" % name )
+                fileobj.write( "<p>%s</p>" %  helpText )
+            fileobj.write( "</body></html>" )
 
     def view( self ):
         self._render()
-        fileUrl = "file://%s" % urllib.pathname2url( self.filename )
-        webbrowser.open( fileUrl )
+        fileUrl = "file:%s" % urllib.pathname2url( self.filename )
+        # Catch exception, because webbrowser.open sometimes raises exception
+        # without any reason
+        try:
+            webbrowser.open( fileUrl )
+        except WindowsError, e:
+            logging.warning(e)
 
     def _finalize( self ):
         os.remove( self.filename )
@@ -118,6 +125,7 @@ class HelpCommand( CommandObject ):
         self.setName( self.NAME )
         self.__htmlHelp = htmlHelp
 
+    @safetyNetted
     def run( self ):
         self.__htmlHelp.view()
 
@@ -132,3 +140,5 @@ def load():
         HelpCommand.NAME,
         HelpCommand( DefaultHtmlHelp(cmdMan) )
         )
+
+# vim:set tabstop=4 shiftwidth=4 expandtab:

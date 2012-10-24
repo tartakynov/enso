@@ -39,7 +39,7 @@ def run():
 
     from enso.events import EventManager
     from enso.quasimode import Quasimode
-    from enso import events, plugins, config, quasimode
+    from enso import events, plugins, config, quasimode, webui
 
     eventManager = EventManager.get()
     Quasimode.install( eventManager )
@@ -50,5 +50,7 @@ def run():
         if msgXml != None:
             messages.displayMessage( msgXml )
 
+    webui.start(eventManager)
+    
     eventManager.registerResponder( showWelcomeMessage, "init" )
     eventManager.run()

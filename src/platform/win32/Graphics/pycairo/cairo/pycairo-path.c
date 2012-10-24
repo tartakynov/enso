@@ -183,7 +183,7 @@ static PyObject * path_iter(PyObject *seq); /* forward declaration */
 PyTypeObject PycairoPath_Type = {
     PyObject_HEAD_INIT(NULL)
     0,				        /* ob_size */
-    "enso_win32.cairo.Path",			/* tp_name */
+    "enso.platform.win32.cairo.Path",			/* tp_name */
     sizeof(PycairoPath),		/* tp_basicsize */
     0,					/* tp_itemsize */
     (destructor)path_dealloc,		/* tp_dealloc */
@@ -306,7 +306,7 @@ pathiter_next(PycairoPathiter *it)
 static PyTypeObject PycairoPathiter_Type = {
     PyObject_HEAD_INIT(NULL)
     0,                                  /* ob_size */
-    "enso_win32.cairo.Pathiter",                   /* tp_name */
+    "enso.platform.win32.cairo.Pathiter",                   /* tp_name */
     sizeof(PycairoPathiter),            /* tp_basicsize */
     0,                                  /* tp_itemsize */
     (destructor)pathiter_dealloc,	/* tp_dealloc */

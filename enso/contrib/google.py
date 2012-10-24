@@ -44,10 +44,12 @@ import urllib
 import locale
 import webbrowser
 
+import enso.config
 from enso.commands import CommandManager, CommandObject
 from enso.commands.factories import ArbitraryPostfixFactory
 from enso import selection
 from enso.messages import displayMessage
+from enso.contrib.scriptotron.tracebacks import safetyNetted
 
 
 # ----------------------------------------------------------------------------
@@ -72,6 +74,7 @@ class GoogleCommand( CommandObject ):
             self.setDescription( u"Performs a Google web search for "
                                  u"\u201c%s\u201d." % parameter )
         
+    @safetyNetted
     def run( self ):
         """
         Runs the google command.
@@ -88,36 +91,48 @@ class GoogleCommand( CommandObject ):
 
         if self.parameter != None:
             text = self.parameter.decode()
+            # '...' gets replaced with current selection
+            if "..." in text:
+                seldict = selection.get()
+                text = text.replace(
+                    "...", seldict.get( "text", u"" ).strip().strip("\0"))
         else:
             seldict = selection.get()
             text = seldict.get( "text", u"" )
 
-        text = text.strip()
+        text = text.strip().strip("\0")
         if not text:
             displayMessage( "<p>No text was selected.</p>" )
             return
 
-        BASE_URL = "http://www.google.com/search?hl=%s&q=%s"
+        BASE_URL = "http://www.google.com/search?q=%s"
 
-        # Determine the user's default language setting.  Google
-        # appears to use the two-letter ISO 639-1 code for setting
-        # languages via the 'hl' query argument.
-        languageCode, encoding = locale.getdefaultlocale()
-        if languageCode:
-            language = languageCode.split( "_" )[0]
-        else:
-            language = "en"
+        if enso.config.PLUGIN_GOOGLE_USE_DEFAULT_LOCALE:
+            # Determine the user's default language setting.  Google
+            # appears to use the two-letter ISO 639-1 code for setting
+            # languages via the 'hl' query argument.
+            languageCode, encoding = locale.getdefaultlocale()
+            if languageCode:
+                language = languageCode.split( "_" )[0]
+            else:
+                language = "en"
+            BASE_URL = "%s&hl=%s" % (BASE_URL, language)
 
         # The following is standard convention for transmitting
         # unicode through a URL.
         text = urllib.quote_plus( text.encode("utf-8") )
 
-        finalQuery = BASE_URL % ( language, text )
+        finalQuery = BASE_URL % text
 
         if len( finalQuery ) > MAX_QUERY_LENGTH:
             displayMessage( "<p>Your query is too long.</p>" )
         else:
-            webbrowser.open( finalQuery )
+            # Catch exception, because webbrowser.open sometimes raises exception
+            # without any reason
+            try:
+                webbrowser.open_new_tab( finalQuery )
+            except WindowsError, e:
+                logging.warning(e)
 
 
 class GoogleCommandFactory( ArbitraryPostfixFactory ):
@@ -150,3 +165,5 @@ def load():
         GoogleCommandFactory.NAME,
         GoogleCommandFactory()
         )
+
+# vim:set tabstop=4 shiftwidth=4 expandtab:

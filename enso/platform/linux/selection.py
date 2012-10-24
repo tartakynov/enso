@@ -33,11 +33,12 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 from time import sleep, time, clock
 
 import Xlib
-from enso_linux.utils import *
+import Xlib.ext.xtest
+from enso.platform.linux.utils import *
 
 GET_TIMEOUT = 1.5
 PASTE_STATE = Xlib.X.ShiftMask
-PASTE_KEY = "Insert"
+PASTE_KEY = "^V"
 
 def get_clipboard_text_cb (clipboard, text, userdata):
     '''Callback for clipboard fetch handling'''
@@ -93,9 +94,20 @@ def fake_paste (display = None):
         display = get_display ()
     window = get_focussed_window (display)
     state = PASTE_STATE
-    keycode = get_keycode (key = PASTE_KEY, display = display)
+    k = PASTE_KEY
+    ctrl = False
+    if k.startswith("^"):
+      k = k[1:]
+      ctrl = True
+    keycode = get_keycode (key = k, display = display)
     key = make_key (keycode, state, window, display)
-    return fake_key_updown (key, window, display)
+    ctrl_keycode = get_keycode (key = "Control_L", display = display)
+    ctrl_key = make_key (ctrl_keycode, state, window, display)
+    if ctrl: Xlib.ext.xtest.fake_input(display, Xlib.X.KeyPress, ctrl_keycode)
+    Xlib.ext.xtest.fake_input(display, Xlib.X.KeyPress, keycode)
+    Xlib.ext.xtest.fake_input(display, Xlib.X.KeyRelease, keycode)
+    Xlib.ext.xtest.fake_input(display, Xlib.X.KeyRelease, ctrl_keycode)
+    display.sync()
 
 def get ():
     '''Fetch text from X PRIMARY selection'''
@@ -121,9 +133,7 @@ def set (seldict):
         clipboard.set_text (seldict["text"])
         primary = gtk.clipboard_get (selection = "PRIMARY")
         primary.set_text (seldict["text"])
-        fake_paste ()
-        clipboard.set_text ("")
-        primary.set_text ("")
+        fake_paste()
         return True
     return False
 

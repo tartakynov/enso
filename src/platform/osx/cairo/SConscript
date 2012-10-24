@@ -22,13 +22,7 @@ def download_and_build(env, name, libname, configure_flags="",
     tarball = "%s.tar.gz" % name
     thisdir = Dir(".")
     srcdir = Dir(name)
-
-    # We originally had a separate directory for intermediate
-    # build files, but when moving from Cairo 1.6.4 to 1.8.10,
-    # building this way stopped working, so now we just dump
-    # the build files in the source code directory.
-
-    builddir = srcdir #Dir("%s-build" % name)
+    builddir = Dir("%s-build" % name)
     distdir = Dir("%s-dist" % name)
     makefile = File(builddir.abspath + "/Makefile")
     configure = File(srcdir.abspath + "/configure")
@@ -47,7 +41,7 @@ def download_and_build(env, name, libname, configure_flags="",
     env.Command(
         makefile,
         configure,
-        #"mkdir -p ${BUILDDIR} && "
+        "mkdir -p ${BUILDDIR} && "
         "cd ${BUILDDIR} && "
         "${SRCDIR.abspath}/configure --prefix=${DISTDIR.abspath} "
         '    LDFLAGS="-header-pad_max_install_names" ${CONFIGURE_FLAGS}',
@@ -88,7 +82,7 @@ env.Append(BUILDERS = {"Download" : Builder(action=download)})
 
 pixman_lib, pixman_dir = download_and_build(
     env,
-    "pixman-0.18.0",
+    "pixman-0.10.0",
     "libpixman-1.0.dylib"
     )
 
@@ -96,9 +90,9 @@ fake_pkgconfig = File("fake-pkg-config")
 
 cairo_lib, cairo_dir = download_and_build(
     env,
-    "cairo-1.8.10",
+    "cairo-1.6.4",
     "libcairo.2.dylib",
-    "--enable-quartz --disable-xlib --disable-png --disable-ft "
+    "--enable-quartz --disable-xlib --disable-png --disable-freetype "
     "--disable-pdf --disable-ps --enable-quartz-font --disable-svg "
     'pixman_CFLAGS="-I%(pixman_dir)s/include/pixman-1" '
     'pixman_LIBS="-L%(pixman_dir)s/lib -lpixman-1" '

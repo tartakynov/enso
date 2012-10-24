@@ -69,10 +69,11 @@ class TextWindow:
         """
 
         # Use the maximum width that we can, i.e., the desktop width.
-        width = graphics.getDesktopSize()[0]
+        width, _ = graphics.getDesktopSize()
+        left, top = graphics.getDesktopOffset()
 
         xPos, yPos = position
-        self.__window = TransparentWindow( xPos, yPos, width, height )
+        self.__window = TransparentWindow(xPos + left, yPos, width, height )
         self.__context = self.__window.makeCairoContext()
         
 

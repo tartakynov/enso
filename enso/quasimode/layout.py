@@ -163,11 +163,11 @@ def _updateSuggestionColors( styles, active ):
     if active:
         styles.update( "line", color = WHITE )
         styles.update( "ins", color = DARK_GREEN )
-        styles.update( "alt", color = BLACK )
+        styles.update( "alt", color = WHITE )
     else:
         styles.update( "line", color = DESIGNER_GREEN )
         styles.update( "ins", color = DARK_GREEN )
-        styles.update( "alt", color = BLACK )
+        styles.update( "alt", color = DESIGNER_GREEN )
 
 
 def _updateStyles( styles, scale, size ):

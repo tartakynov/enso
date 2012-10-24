@@ -54,6 +54,7 @@ cppBaseDefines = {
     "ENSO_DEBUG" : "1",
     "WIN32" : "1",
     "_WINDOWS" : "1",
+    "_CRT_SECURE_NO_WARNINGS" : "1",
     }
 
 cppDebugDefines = {
@@ -83,7 +84,9 @@ ccBaseFlags = [
     ]
 
 ccDebugFlags = [
-    "/MD",      # Use dynamically-linked msvcrt for C runtime
+    "/MT",      # Use dynamically-linked msvcrt for C runtime
+    #"/LD",      # Use dynamically-linked msvcrt for C runtime
+    #"/MD",      # Use dynamically-linked msvcrt for C runtime
                 # We're not using the debug version of the msvcrt because
                 # it raises complications with linking to Python and because
                 # we don't really need the debugging support provided by
@@ -93,7 +96,9 @@ ccDebugFlags = [
 
 ccNoDebugFlags = [
     "/O2",      # Enable optimizations
-    "/MD",      # Use dynamically-linked msvcrt for C runtime
+    "/MT",      # Use dynamically-linked msvcrt for C runtime
+    #"/LD",      # Use dynamically-linked msvcrt for C runtime
+    #"/MD",      # Use dynamically-linked msvcrt for C runtime
     "/Ob1",     # Inline expansion only for functions marked as inline
     "/GF",      # Pool strings as read-only
     "/Gy",      # Enable function-level linking
@@ -127,6 +132,7 @@ baseEnv = Environment(
     LIBPATH = [],
     CCFLAGS = ccBaseFlags,
     LINKFLAGS = linkBaseFlags,
+    ENV = {'PATH': os.environ['PATH']},
 
     # Our custom environment variables used by our
     # SConstruct/SConscript files.
@@ -143,6 +149,18 @@ baseEnv = Environment(
 
 
 # ----------------------------------------------------------------------------
+# Extra environment variables
+# ----------------------------------------------------------------------------
+
+
+outsideEnvVars = ['TMP', 'LIB', 'LIBPATH', 'INCLUDE']
+
+for k in outsideEnvVars:
+    if k in os.environ:
+        baseEnv['ENV'][k] = os.environ[k]
+
+
+# ----------------------------------------------------------------------------
 # Tools
 # ----------------------------------------------------------------------------
 
@@ -152,6 +170,17 @@ baseEnv.Tool( "HumanizedUtilsTool", toolpath = ["src/platform/win32/SConsTools"]
 # ----------------------------------------------------------------------------
 # Library Definitions
 # ----------------------------------------------------------------------------
+
+# Windows SDK
+#baseEnv.addLib(
+#       libPath = "C:\\Program Files\\Microsoft SDKs\\Windows\\v6.0A\\Lib",
+#       includePath = "C:\\Program Files\\Microsoft SDKs\\Windows\\v6.0A\\Include"
+#       )
+#baseEnv.addLib(
+#       libPath = "C:\\Program Files\\Microsoft Visual Studio 9.0\\VC\\lib",
+#       includePath = "C:\\Program Files\\Microsoft Visual Studio 9.0\\VC\\include"
+#       )
+
 
 # Python
 baseEnv.addLib(
@@ -207,3 +236,5 @@ SConscript( "src/platform/win32/Logging/SConscript", exports="env" )
 SConscript( "src/platform/win32/InputManager/SConscript", exports="env" )
 SConscript( "src/platform/win32/Graphics/SConscript", exports="env" )
 SConscript( "src/platform/win32/ClipboardBackend/SConscript", exports="env" )
+
+# vi:set tabstop=4 shiftwidth=4 expandtab

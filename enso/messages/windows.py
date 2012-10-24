@@ -121,9 +121,6 @@ class MessageWindow:
         should be in points.
         """
 
-        assert xPos <= graphics.getDesktopSize()[0]
-        assert yPos <= graphics.getDesktopSize()[1]
-
         self.__currPos = xPos, yPos
         if self._wind != None:
             self._wind.setPosition( xPos, yPos )

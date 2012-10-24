@@ -50,8 +50,8 @@
  *           it is unreferenced if the PycairoSurface creation fails, or if
              the cairo_surface_t has an error status
  * type - the type of the object to instantiate; it can be NULL,
- *        meaning a base enso_win32.cairo.Surface type, or it can be a subclass of
- *        enso_win32.cairo.Surface.
+ *        meaning a base enso.platform.win32.cairo.Surface type, or it can be a subclass of
+ *        enso.platform.win32.cairo.Surface.
  * base - the base object used to create the context, or NULL.
  *        it is referenced to keep it alive while the cairo_surface_t is
  *        being used
@@ -257,7 +257,7 @@ static PyMethodDef surface_methods[] = {
 PyTypeObject PycairoSurface_Type = {
     PyObject_HEAD_INIT(NULL)
     0,                                  /* ob_size */
-    "enso_win32.cairo.Surface",                    /* tp_name */
+    "enso.platform.win32.cairo.Surface",                    /* tp_name */
     sizeof(PycairoSurface),             /* tp_basicsize */
     0,                                  /* tp_itemsize */
     (destructor)surface_dealloc,        /* tp_dealloc */
@@ -515,7 +515,7 @@ static PyMethodDef image_surface_methods[] = {
 PyTypeObject PycairoImageSurface_Type = {
     PyObject_HEAD_INIT(NULL)
     0,                                  /* ob_size */
-    "enso_win32.cairo.ImageSurface",               /* tp_name */
+    "enso.platform.win32.cairo.ImageSurface",               /* tp_name */
     sizeof(PycairoImageSurface),        /* tp_basicsize */
     0,                                  /* tp_itemsize */
     0,                                  /* tp_dealloc */
@@ -607,7 +607,7 @@ static PyMethodDef pdfsurface_methods[] = {
 PyTypeObject PycairoPDFSurface_Type = {
     PyObject_HEAD_INIT(NULL)
     0,                                  /* ob_size */
-    "enso_win32.cairo.PDFSurface",                 /* tp_name */
+    "enso.platform.win32.cairo.PDFSurface",                 /* tp_name */
     sizeof(PycairoPDFSurface),          /* tp_basicsize */
     0,                                  /* tp_itemsize */
     0,                                  /* tp_dealloc */
@@ -700,7 +700,7 @@ static PyMethodDef pssurface_methods[] = {
 PyTypeObject PycairoPSSurface_Type = {
     PyObject_HEAD_INIT(NULL)
     0,                                  /* ob_size */
-    "enso_win32.cairo.PSSurface",                  /* tp_name */
+    "enso.platform.win32.cairo.PSSurface",                  /* tp_name */
     sizeof(PycairoPSSurface),           /* tp_basicsize */
     0,                                  /* tp_itemsize */
     0,                                  /* tp_dealloc */
@@ -778,7 +778,7 @@ static PyMethodDef win32surface_methods[] = {
 PyTypeObject PycairoWin32Surface_Type = {
     PyObject_HEAD_INIT(NULL)
     0,                                  /* ob_size */
-    "enso_win32.cairo.Win32Surface",               /* tp_name */
+    "enso.platform.win32.cairo.Win32Surface",               /* tp_name */
     sizeof(PycairoWin32Surface),        /* tp_basicsize */
     0,                                  /* tp_itemsize */
     0,                                  /* tp_dealloc */

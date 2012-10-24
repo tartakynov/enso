@@ -44,8 +44,8 @@
  *           pattern is unreferenced if the PycairoPattern creation fails, or
  *           if the pattern is in an error status.
  * type - the type of the object to instantiate; it can be NULL,
- *        meaning a base enso_win32.cairo.Pattern type, or it can be a subclass of
- *        enso_win32.cairo.Pattern
+ *        meaning a base enso.platform.win32.cairo.Pattern type, or it can be a subclass of
+ *        enso.platform.win32.cairo.Pattern
  * Return value: New reference or NULL on failure
  */
 PyObject *
@@ -133,7 +133,7 @@ static PyMethodDef pattern_methods[] = {
 PyTypeObject PycairoPattern_Type = {
     PyObject_HEAD_INIT(NULL)
     0,                                  /* ob_size */
-    "enso_win32.cairo.Pattern",                    /* tp_name */
+    "enso.platform.win32.cairo.Pattern",                    /* tp_name */
     sizeof(PycairoPattern),             /* tp_basicsize */
     0,                                  /* tp_itemsize */
     (destructor)pattern_dealloc,        /* tp_dealloc */
@@ -211,7 +211,7 @@ static PyMethodDef solid_pattern_methods[] = {
 PyTypeObject PycairoSolidPattern_Type = {
     PyObject_HEAD_INIT(NULL)
     0,                                  /* ob_size */
-    "enso_win32.cairo.SolidPattern",               /* tp_name */
+    "enso.platform.win32.cairo.SolidPattern",               /* tp_name */
     sizeof(PycairoSolidPattern),        /* tp_basicsize */
     0,                                  /* tp_itemsize */
     0,                                  /* tp_dealloc */
@@ -327,7 +327,7 @@ static PyMethodDef surface_pattern_methods[] = {
 PyTypeObject PycairoSurfacePattern_Type = {
     PyObject_HEAD_INIT(NULL)
     0,                                  /* ob_size */
-    "enso_win32.cairo.SurfacePattern",             /* tp_name */
+    "enso.platform.win32.cairo.SurfacePattern",             /* tp_name */
     sizeof(PycairoSurfacePattern),      /* tp_basicsize */
     0,                                  /* tp_itemsize */
     0,                                  /* tp_dealloc */
@@ -421,7 +421,7 @@ static PyMethodDef gradient_methods[] = {
 PyTypeObject PycairoGradient_Type = {
     PyObject_HEAD_INIT(NULL)
     0,                                  /* ob_size */
-    "enso_win32.cairo.Gradient",                   /* tp_name */
+    "enso.platform.win32.cairo.Gradient",                   /* tp_name */
     sizeof(PycairoGradient),            /* tp_basicsize */
     0,                                  /* tp_itemsize */
     0,                                  /* tp_dealloc */
@@ -497,7 +497,7 @@ static PyMethodDef linear_gradient_methods[] = {
 PyTypeObject PycairoLinearGradient_Type = {
     PyObject_HEAD_INIT(NULL)
     0,                                  /* ob_size */
-    "enso_win32.cairo.LinearGradient",             /* tp_name */
+    "enso.platform.win32.cairo.LinearGradient",             /* tp_name */
     sizeof(PycairoLinearGradient),      /* tp_basicsize */
     0,                                  /* tp_itemsize */
     0,                                  /* tp_dealloc */
@@ -573,7 +573,7 @@ static PyMethodDef radial_gradient_methods[] = {
 PyTypeObject PycairoRadialGradient_Type = {
     PyObject_HEAD_INIT(NULL)
     0,                                  /* ob_size */
-    "enso_win32.cairo.RadialGradient",             /* tp_name */
+    "enso.platform.win32.cairo.RadialGradient",             /* tp_name */
     sizeof(PycairoRadialGradient),      /* tp_basicsize */
     0,                                  /* tp_itemsize */
     0,                                  /* tp_dealloc */

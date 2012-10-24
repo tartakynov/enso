@@ -286,21 +286,37 @@ and destroy it.'''
         '''Destroy the inner instance'''
         self.finish ()
 
-_NET_CURRENT_DESKTOP = gtk.gdk.atom_intern ("_NET_CURRENT_DESKTOP")
-_NET_WORKAREA = gtk.gdk.atom_intern ("_NET_WORKAREA")
+def getCurrentMonitor ():
+    '''Helper fetching the current monitor of focus'''
+    from enso.platform.linux import utils
+    display = utils.get_display ()
+    input_focus = display.get_input_focus ()
+    if input_focus != None and input_focus.focus:
+        window = input_focus.focus
+        geom = window.get_geometry()
+        width = geom.width
+        if (width == display.screen().width_in_pixels):
+            '''Either a full screen window or desktop.
+            We will use mouse coordinates for this'''
+            _, x, y, _ = gtk.gdk.display_get_default().get_pointer() 
+        else:
+            '''A floating window.  We will see which monitor
+            the majority of the window is on'''
+            root = window.query_tree().root
+            trans = root.translate_coords(window, 0, 0)
+            x = trans.x + (width / 2)
+            y = trans.y        
+    else:
+        x, y = 0, 0
+        print "no focus"
+    
+    return gtk.gdk.screen_get_default ().get_monitor_at_point(x, y)
+    
+def getDesktopOffset ():
+    '''Helper fetching the offset so that Enso can draw on multiple desktops'''
+    left, top, _, _ = gtk.gdk.screen_get_default ().get_monitor_geometry (getCurrentMonitor ())
+    return left, top    
+    
 def getDesktopSize ():
-    '''Helper fetching the current workarea (i.e. usable space) size'''
-    root = gtk.gdk.screen_get_default ().get_root_window ()
-    prop = root.property_get (_NET_CURRENT_DESKTOP)
-    if prop is None:
-        _, _, width, height, depth = root.get_geometry ()
-        return width, height
-    propname, proptype, propvalue = prop
-    current = propvalue[0]
-    prop = root.property_get (_NET_WORKAREA)
-    if prop is None:
-        _, _, width, height, depth = root.get_geometry ()
-        return width, height
-    propname, proptype, propvalue = prop
-    _,_, width, height = propvalue[current * 4 : (current + 1) * 4]
-    return width, height
+    _, _, width, height = gtk.gdk.screen_get_default ().get_monitor_geometry (getCurrentMonitor ())
+    return width, height 

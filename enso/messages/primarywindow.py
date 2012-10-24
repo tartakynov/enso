@@ -208,8 +208,9 @@ class PrimaryMsgWind( MessageWindow ):
         """
         
         desksize = graphics.getDesktopSize()
+        left, top = graphics.getDesktopOffset()
 
-        xPos = ( desksize[0] - self.getSize()[0] ) / 2
+        xPos = ((desksize[0] - self.getSize()[0]) / 2) + left
         # Set the height based on the "maximum" height, so that the
         # message always appears at the same vertical offset from the
         # top of the screen.

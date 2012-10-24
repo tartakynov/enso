@@ -48,6 +48,7 @@ env.addLib(
     includePath = "src",
     libPath = "src",
     PIXMAN_LIB_NAME = "pixman",
+    #SHLIBSUFFIX = ".pyd",
     )
 
 # Disable "treat all warnings as errors". This is done because the

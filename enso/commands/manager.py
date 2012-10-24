@@ -95,14 +95,17 @@ class CommandManager:
         if cmdExpr.hasArgument():
             # The command expression has an argument; it is a command
             # with an argument.
-            assert isinstance( cmdObj, AbstractCommandFactory )
-            assert not self.__cmdFactoryDict.has_key( cmdExpr )
+            assert isinstance( cmdObj, AbstractCommandFactory ), \
+                "Command object with a parameter must be instance " \
+                "of AbstractCommandFactory"
+            assert not self.__cmdFactoryDict.has_key( cmdExpr ),\
+                "Command is already registered: %s" % cmdExpr
             self.__cmdFactoryDict[ cmdExpr ] = cmdObj
         else:
             # The command expression has no argument; it is a
             # simple command with an exact name.
             assert isinstance( cmdObj, CommandObject ), \
-                   "Could not register %s" % cmdName
+                   "Could not register %s. Object has not type CommandObject." % cmdName
             self.__cmdObjReg.addCommandObj( cmdObj, cmdExpr )
 
     def unregisterCommand( self, cmdName ):
@@ -121,7 +124,7 @@ class CommandManager:
 
     def getCommandExpression( self, commandName ):
         """
-        Returns the unique command expression that is assosciated with
+        Returns the unique command expression that is associated with
         commandName.  For example, if commandName is 'open emacs', and
         the command expression was 'open {file}', then a command expression
         object for 'open {file}' will be returned.
@@ -166,18 +169,42 @@ class CommandManager:
                 # This expression matches commandName; try to fetch a
                 # command object from the corresponding factory.
                 cmd = self.__cmdFactoryDict[expr].getCommandObj( commandName )
-                if cmd != None:
+                if cmd is not None:
                     # The factory returned a non-nil command object.
                     commands.append( ( expr, cmd ) )
 
         if len( commands ) == 0:
+            # There is no match
             return None
+        elif len( commands ) == 1:
+            # There is exactly one match
+            return commands[0][1]
         else:
-            # If there are several matching commands, return only
-            # the alphabetically first.
-            prefixes = [ (e.getPrefix(),c) for (e,c) in commands ]
-            prefixes.sort( lambda a,b : cmp( a[0], b[0] ) )
-            return prefixes[0][1]
+            # There are more matches, choose the best one
+            prefixes = dict( (expr.getPrefix(), cmd) for (expr, cmd) in commands )
+            
+            # This is the old approach, returning alphabetically first
+            #return sorted(prefixes.items())[0][1]
+
+            # Try to find longest possible exact match first:
+            longest_name = commandName
+            # If there is no space at the end, it is a parameter there
+            if not longest_name.endswith(' '):
+                # Strip parameter off
+                longest_name = longest_name[:longest_name.rfind(" ")]
+            else:
+                longest_name = longest_name.rstrip(" ")
+            
+            cmd = None
+            for _ in xrange(longest_name.count(" ") + 1):
+                cmd = prefixes.get(longest_name+' ')
+                if cmd:
+                    print "Returning longest match: %s" % longest_name
+                    logging.debug("Longest match: '%s'", longest_name)
+                    break
+                longest_name = longest_name[:longest_name.rfind(" ")]
+
+            return cmd
 
 
     def autoComplete( self, userText ):
@@ -281,7 +308,8 @@ class CommandObjectRegistry( GenericPrefixFactory ):
         Adds command to the registry under the name str(cmdExpr).
         """
 
-        assert isinstance( cmdExpr, CommandExpression )
+        assert isinstance( cmdExpr, CommandExpression ),\
+            "addCommandObj(): cmdExpr arg is not CommandExpression type"
         assert not cmdExpr.hasArgument()
 
         cmdName = str(cmdExpr)
@@ -319,3 +347,12 @@ class CommandObjectRegistry( GenericPrefixFactory ):
             return self.__cmdObjDict[ cmdNameString ]
         except KeyError:
             return None
+
+
+if __name__ == "__main__":
+    import doctest
+
+    doctest.testmod()
+
+
+# vim:set tabstop=4 shiftwidth=4 expandtab:

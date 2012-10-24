@@ -53,6 +53,7 @@ libs = [
 dllFile, expFile, libFile = env.SharedLibrary(
     target="${PYCAIRO_LIB_NAME}",
     source=sourceList,
+    SHLIBSUFFIX = ".pyd",
     LIBS=libs
     )
 

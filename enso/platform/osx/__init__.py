@@ -5,6 +5,8 @@ import enso.platform
 if sys.platform != "darwin":
     raise enso.platform.PlatformUnsupportedError()
 
+
+
 def provideInterface( name ):
     if name == "input":
         import enso.platform.osx.input
@@ -18,5 +20,8 @@ def provideInterface( name ):
     elif name == "selection":
         import enso.platform.osx.selection
         return enso.platform.osx.selection
+    elif name == "scripts_folder":
+        from enso.platform.osx.scriptfolder import get_script_folder_name
+        return get_script_folder_name
     else:
         return None

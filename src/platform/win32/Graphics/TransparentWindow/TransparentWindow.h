@@ -390,4 +390,8 @@ extern void
 _getDesktopSize( int *width,
                  int *height );
 
+extern void
+_getDesktopOffset( int *left,
+                 int *top );
+
 #endif

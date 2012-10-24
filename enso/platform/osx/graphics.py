@@ -178,3 +178,6 @@ class TransparentWindow( object ):
 def getDesktopSize():
     size = AppKit.NSScreen.mainScreen().frame().size
     return ( size.width, size.height )
+
+def getDesktopOffset():
+    return (0, 0)

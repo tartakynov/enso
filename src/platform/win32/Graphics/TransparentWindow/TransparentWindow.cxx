@@ -622,3 +622,24 @@ _getDesktopSize( int *width,
     *width = desktopRect.right;
     *height = desktopRect.bottom;    
 }
+
+/* ------------------------------------------------------------------------
+ * Get the dimensions of the desktop, in pixels.
+ * ........................................................................
+ * ----------------------------------------------------------------------*/
+
+void
+_getDesktopOffset( int *left,
+                 int *top )
+{
+    //HWND hWndDesktop = GetDesktopWindow();
+    //RECT desktopRect;
+
+    //if ( GetWindowRect(hWndDesktop, &desktopRect) == 0 )
+    //    throw FatalError( "Couldn't get desktop window size." );
+
+    //TODO: IMplement desktop offset
+    *left = 0;
+    *top = 0;
+}
+

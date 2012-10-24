@@ -8,16 +8,15 @@ import enso
 if __name__ == "__main__":
     logging.basicConfig( level=logging.INFO )
 
-    # TODO: os.getenv( "HOME" ) only works 'out-of-the-box' on
-    # unix; we need to do something different, preferably
-    # in platform-specific backends.
-    homeDir = os.getenv( "HOME" )
-    if homeDir:
-        ensorcPath = os.path.join( homeDir, ".ensorc" )
-        if os.path.exists( ensorcPath ):
-            logging.info( "Loading '%s'." % ensorcPath )
-            contents = open( ensorcPath, "r" ).read()
-            compiledContents = compile( contents, ensorcPath, "exec" )
-            exec compiledContents in {}, {}
+    ensorc_path = os.path.expanduser(os.path.join("~", ".ensorc"))
+    if os.path.isfile(ensorc_path):
+        logging.info( "Loading '%s'." % ensorc_path )
+        contents = open( ensorc_path, "r" ).read()
+        compiledContents = compile( contents + "\n", ensorc_path, "exec" )
+        exec compiledContents in {}, {}
+    else:
+        logging.warning(".ensorc file can't be read!")
 
     enso.run()
+
+# vim:set tabstop=4 shiftwidth=4 expandtab:

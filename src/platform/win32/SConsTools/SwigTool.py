@@ -40,6 +40,7 @@ def buildSwigExtension( env,
     pydFile, libFile, expFile = env.SharedLibrary(
         target=targetFileName,
         source=sourceList,
+        SHLIBSUFFIX = ".pyd",
         **kwargs
         )
 
@@ -90,9 +91,9 @@ def swigBuilderGenerator( source, target, env, for_signature ):
     if len( dirName ) == 0:
         dirName = "."
     if targetFile.endswith( ".cxx" ):
-        cmdStr = "${SWIG} -c++"
+        cmdStr = "\"${SWIG}\" -c++"
     else:
-        cmdStr = "${SWIG}"
+        cmdStr = "\"${SWIG}\""
 
     # Read the environment's CPPPATH and turn that into the Swig
     # include path.

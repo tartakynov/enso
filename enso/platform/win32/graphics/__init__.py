@@ -45,3 +45,5 @@ from TransparentWindow import TransparentWindow
 # Aliases to external names.
 from TransparentWindow import _getDesktopSize as getDesktopSize
 
+def getDesktopOffset():
+    return (0, 0)

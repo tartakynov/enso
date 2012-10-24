@@ -11,7 +11,8 @@ from enso.contrib.scriptotron import cmdretriever
 from enso.contrib.scriptotron import ensoapi
 from enso.contrib.scriptotron import concurrency
 
-SCRIPTS_FILE_NAME = ".ensocommands"
+# This may no longer be required (it was for backward compat)
+SCRIPTS_FILE_NAME = "~/.ensocommands"
 
 class ScriptCommandTracker:
     def __init__( self, commandManager, eventManager ):
@@ -34,7 +35,7 @@ class ScriptCommandTracker:
         for handler in self._qmStartEvents:
             self._callHandler( handler )
 
-    def _clearCommands( self ):
+    def clearCommands( self ):
         for cmdExpr in self._cmdExprs:
             self._cmdMgr.unregisterCommand( cmdExpr )
         self._cmdExprs = []
@@ -49,7 +50,6 @@ class ScriptCommandTracker:
             logging.warn( "Command already registered: %s" % cmdExpr )
 
     def registerNewCommands( self, commandInfoList ):
-        self._clearCommands()
         for info in commandInfoList:
             if hasattr( info["func"], "on_quasimode_start" ):
                 self._qmStartEvents.append( info["func"].on_quasimode_start )
@@ -64,11 +64,9 @@ class ScriptTracker:
     def __init__( self, eventManager, commandManager ):
         self._scriptCmdTracker = ScriptCommandTracker( commandManager,
                                                        eventManager )
-        # TODO: os.environ["HOME"] only works 'out-of-the-box' on
-        # unix; we need to do something different, preferably
-        # in platform-specific backends.
-        self._scriptFilename = os.path.join( os.environ["HOME"],
-                                             SCRIPTS_FILE_NAME )
+        self._scriptFilename = os.path.expanduser(SCRIPTS_FILE_NAME )
+        from enso.providers import getInterface
+        self._scriptFolder = getInterface("scripts_folder")()
         self._lastMods = {}
         self._registerDependencies()
 
@@ -87,25 +85,43 @@ class ScriptTracker:
     @safetyNetted
     def _getGlobalsFromSourceCode( self, text, filename ):
         allGlobals = {}
-        code = compile( text, self._scriptFilename, "exec" )
+        code = compile( text, filename, "exec" )
         exec code in allGlobals
         return allGlobals
+    
+    def _getCommandFiles( self ):
+        try:
+            commandFiles = [
+              os.path.join(self._scriptFolder,x)
+              for x in os.listdir(self._scriptFolder)
+              if x.endswith(".py")
+            ]
+        except:
+            commandFiles = []
+        return commandFiles
 
     def _reloadPyScripts( self ):
-        text = open( self._scriptFilename, "r" ).read()
+        self._scriptCmdTracker.clearCommands()
+        commandFiles = [self._scriptFilename] + self._getCommandFiles()
+        print commandFiles
+        for f in commandFiles:
+            try:
+                text = open( f, "r" ).read()
+            except:
+                continue
 
-        allGlobals = self._getGlobalsFromSourceCode(
-            text,
-            self._scriptFilename
-            )
+            allGlobals = self._getGlobalsFromSourceCode(
+                text,
+                f
+                )
 
-        if allGlobals is not None:
-            infos = cmdretriever.getCommandsFromObjects( allGlobals )
-            self._scriptCmdTracker.registerNewCommands( infos )
-            self._registerDependencies( allGlobals )
+            if allGlobals is not None:
+                infos = cmdretriever.getCommandsFromObjects( allGlobals )
+                self._scriptCmdTracker.registerNewCommands( infos )
+                self._registerDependencies( allGlobals )
 
     def _registerDependencies( self, allGlobals = None ):
-        baseDeps = [ self._scriptFilename ]
+        baseDeps = [ self._scriptFilename ] + self._getCommandFiles()
 
         if allGlobals:
             # Find any other files that the script may have executed
@@ -131,5 +147,12 @@ class ScriptTracker:
                     self._lastMods[fileName] = lastMod
                     shouldReload = True
 
+        for fileName in self._getCommandFiles():
+            if fileName not in self._fileDependencies:
+                self._fileDependencies.append(fileName)
+                self._lastMods[fileName] = os.stat( fileName ).st_mtime
+                shouldReload = True
+
         if shouldReload:
             self._reloadPyScripts()
+

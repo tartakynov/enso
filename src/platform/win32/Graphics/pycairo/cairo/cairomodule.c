@@ -196,7 +196,7 @@ init_cairo(void)
         return;
 #endif
 
-    m = Py_InitModule("enso_win32.cairo._cairo", cairo_functions);
+    m = Py_InitModule("enso.platform.win32.cairo._cairo", cairo_functions);
 
     Py_INCREF(&PycairoContext_Type);
     PyModule_AddObject(m, "Context", (PyObject *)&PycairoContext_Type);
@@ -207,7 +207,7 @@ init_cairo(void)
     Py_INCREF(&PycairoMatrix_Type);
     PyModule_AddObject(m, "Matrix",  (PyObject *)&PycairoMatrix_Type);
     Py_INCREF(&PycairoPath_Type);
-    /* Don't add Path object since it is not accessed directly as 'enso_win32.cairo.Path'
+    /* Don't add Path object since it is not accessed directly as 'enso.platform.win32.cairo.Path'
      * PyModule_AddObject(m, "Path", (PyObject *)&PycairoPath_Type);
      */
     Py_INCREF(&PycairoPattern_Type);
@@ -254,9 +254,9 @@ init_cairo(void)
 
     PyModule_AddObject(m, "CAPI", PyCObject_FromVoidPtr(&CAPI, NULL));
 
-    /* Add 'enso_win32.cairo.Error' to the module */
+    /* Add 'enso.platform.win32.cairo.Error' to the module */
     if (CairoError == NULL) {
-	CairoError = PyErr_NewException("enso_win32.cairo.Error", NULL, NULL);
+	CairoError = PyErr_NewException("enso.platform.win32.cairo.Error", NULL, NULL);
 	if (CairoError == NULL)
 	    return;
     }
