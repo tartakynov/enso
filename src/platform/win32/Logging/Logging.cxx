@@ -349,7 +349,7 @@ logMessageWithVars( int level,
     /* Allocate new string long enough to hold original string plus
      * longest possible integer: */
     char *stringWithVars = NULL;
-    long stringLen = strlen( msgString ) + MAX_VARS_STRING_LEN;
+    size_t stringLen = strlen( msgString ) + MAX_VARS_STRING_LEN;
     stringWithVars = (char*)malloc( stringLen+1 );
 
     if ( stringWithVars == NULL )
@@ -400,7 +400,7 @@ void
 _createTimeStamp( char *timeStampString )
 {
     time_t rawtime;
-    int length;
+    size_t length;
     char *tempString;
 
     time ( &rawtime );
@@ -549,7 +549,7 @@ _logMessageWithOneInt( int level,
     /* Allocate new string long enough to hold original string plus
      * longest possible integer: */
     char *stringWithInt = NULL;
-    long stringLen = strlen( msgString ) + LONGEST_INT;
+    size_t stringLen = strlen( msgString ) + LONGEST_INT;
     stringWithInt = (char*)malloc( stringLen+1 );
 
     if ( stringWithInt == NULL )
