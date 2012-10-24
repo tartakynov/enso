@@ -1,0 +1,15 @@
+Enso Windows Readme
+===================
+
+In addition to the prerequisites outlined in the README, you need to
+have the following set up:
+
+  * Python 2.4 needs to be installed at C:\Python24.
+
+  * SWIG, the Simple Wrapper Interface Generator, must be installed at
+    C:\Swig.
+
+  * Microsoft Visual Studio 2003
+
+TODO: This README is far from complete, and the above prerequisites
+may not be all that's required; we need to expand on this.
