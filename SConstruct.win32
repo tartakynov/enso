@@ -78,13 +78,13 @@ ccBaseFlags = [
     "/W3",      # Set warning level (max is 4, min is 0)
     "/WX",      # Treat all warnings as errors
     "/nologo",  # Suppress display of sign-on banner
-    "/Zi",      # Produce a program database (PDB) that contains type
-                # information and symbolic debugging information for use
-                # with the debugger.
     ]
 
 ccDebugFlags = [
     "/MT",      # Use dynamically-linked msvcrt for C runtime
+    "/Zi",      # Produce a program database (PDB) that contains type
+                # information and symbolic debugging information for use
+                # with the debugger.
     #"/LD",      # Use dynamically-linked msvcrt for C runtime
     #"/MD",      # Use dynamically-linked msvcrt for C runtime
                 # We're not using the debug version of the msvcrt because
@@ -111,10 +111,10 @@ ccNoDebugFlags = [
 
 linkBaseFlags = [
     "/nologo",
-    "/DEBUG",   # Create .pdb file containing debugging information
     ]
 
 linkDebugFlags = [
+    "/DEBUG",   # Create .pdb file containing debugging information
     ]
 
 linkNoDebugFlags = [
