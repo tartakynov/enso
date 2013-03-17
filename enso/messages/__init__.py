@@ -1,6 +1,6 @@
 # Copyright (c) 2008, Humanized, Inc.
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #
@@ -14,7 +14,7 @@
 #    3. Neither the name of Enso nor the names of its contributors may
 #       be used to endorse or promote products derived from this
 #       software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY Humanized, Inc. ``AS IS'' AND ANY
 # EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -172,7 +172,7 @@ class Message:
       True
     """
 
-    def __init__( self, 
+    def __init__( self,
                   fullXml,
                   primaryXml = None,
                   miniXml = None,
@@ -203,7 +203,7 @@ class Message:
         self.__fullXml = fullXml
         self.__primaryXml = primaryXml
         self.__miniXml = miniXml
-        
+
 
     def isPrimary( self ):
         """
@@ -211,7 +211,7 @@ class Message:
         message.  Otherwise, this Message should not be a primary
         message.
         """
-        
+
         return self.__isPrimary
 
     def isMini( self ):
@@ -219,7 +219,7 @@ class Message:
         If true, this Message should be displayed as a mini message.
         Otherwise, this Message should not be a mini message.
         """
-        
+
         return self.__isMini
 
     def getFullXml( self ):
@@ -227,7 +227,7 @@ class Message:
         Retrieves the full XML of the entire contents of this
         message.
         """
-        
+
         return self.__fullXml
 
     def getPrimaryXml( self ):
@@ -235,7 +235,7 @@ class Message:
         Gets an XML representation appropriate for displaying
         as a primary message.
         """
-        
+
         if self.__primaryXml != None:
             return self.__primaryXml
         else:
@@ -246,7 +246,7 @@ class Message:
         Gets an XML representation appropriate for displaying
         as a mini message.
         """
-        
+
         if self.__miniXml != None:
             return self.__miniXml
         else:
@@ -323,7 +323,7 @@ class MessageManager:
         Adds a new message to the queue, which will get displayed and
         saved in all appropriate ways.
         """
-        
+
         self.__addToGraveyard( msg )
 
         if msg.isPrimary():
@@ -361,7 +361,8 @@ class MessageManager:
         finished doing anything it needs to do, including on-screen
         animations and the like.
         """
-
+        self._isPrimaryMessageFinished = True
+        del self.__primaryMsgWind
         self.__primaryMsgWind = None
 
     def __addToGraveyard( self, msg ):
@@ -372,17 +373,17 @@ class MessageManager:
         NOTE: This currently does nothing, as the message
         graveyard has not been implemented.
         """
-        
+
         # LONGTERM TODO: Add the full xml representation of the
         # message to the message graveyard.
         pass
 
- 
+
     def __newMiniMessage( self, msg ):
         """
         Adds msg to the list of currently displayed mini messages.
         """
-        
+
         self.__miniMessageWind.addMessage( msg )
 
 
@@ -404,6 +405,10 @@ class MessageManager:
 
         self.__primaryMessage = msg
         self.__primaryMsgWind.setMessage( msg )
+
+
+    def isPrimaryMessageFinished(self, msg):
+        return self.__primaryMessage != msg
 
 
     def finishMessages( self ):
@@ -428,7 +433,7 @@ def displayMessage( msgXml ):
         isMini = False,
         fullXml = msgXml,
         )
-    
+
     MessageManager.get().newMessage( msg )
 
 if __name__ == "__main__":

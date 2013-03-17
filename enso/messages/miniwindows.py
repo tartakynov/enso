@@ -1,6 +1,6 @@
 # Copyright (c) 2008, Humanized, Inc.
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #
@@ -14,7 +14,7 @@
 #    3. Neither the name of Enso nor the names of its contributors may
 #       be used to endorse or promote products derived from this
 #       software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY Humanized, Inc. ``AS IS'' AND ANY
 # EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -61,7 +61,7 @@ MINI_WIND_SIZE = 256, 70
 MINI_WIND_SIZE = [ pixelsToPoints( pixSize ) for pixSize in MINI_WIND_SIZE ]
 MINI_MARGIN = pixelsToPoints( 10 )
 MINI_SCALE = [ 10, 12, 14 ]
-MINI_BG_COLOR = [ .62, .75, .34, .85 ]
+MINI_BG_COLOR = [ .42, .55, .24, .65 ]
 
 
 # ----------------------------------------------------------------------------
@@ -169,14 +169,14 @@ class MiniMessageQueue:
 
             miniWind._wind.setOpacity( 0 )
             miniWind._wind.update()
-            
+
         self.__mouseoverIndex = newIndex
 
 
     def onTick( self, msPassed ):
         if self.__status == self.POLLING:
             self.__onMouseMove()
-            
+
             if len( self.__visibleMessages ) == 0 \
                    and len( self.__newMessages ) == 0:
                 # There are no messages to poll for!
@@ -222,7 +222,7 @@ class MiniMessageQueue:
 
     def __hideHelpMessage( self ):
         self.__helpWindow.hide()
-        
+
 
     def __roundTopWindow( self ):
         for msg in self.__visibleMessages[:-1]:
@@ -261,7 +261,7 @@ class MiniMessageQueue:
         # Move up for each visible message, including this one.
         numVisible = len( self.__visibleMessages ) + 1
         yPos -= ( MINI_WIND_SIZE[1] * numVisible )
-        
+
         # TODO: Add this code back in at some point, when
         # the getStartBarRect() function (or some equivalent)
         # has been added.
@@ -291,7 +291,7 @@ class MiniMessageQueue:
             miniWind._wind.setOpacity( 255 )
             miniWind._wind.update()
             self.__hideHelpMessage()
-            
+
         self.__status = self.VANISHING
 
     def __stopVanishing( self ):
@@ -345,7 +345,7 @@ class MiniMessageWindow( MessageWindow ):
     """
     LONGTERM TODO: More documentation for this class and its methods.
     """
-        
+
     def __init__( self, msg, xPos, yPos ):
         MessageWindow.__init__( self, MINI_WIND_SIZE )
         self.__isRounded = False
@@ -412,13 +412,13 @@ class MiniMessageWindow( MessageWindow ):
 
         xPos = ( width - afterWidth ) / 2
         yPos = ( height - afterHeight ) / 2
-        
+
         cr = self._context
         if self.__isRounded:
             corners = [rounded_rect.UPPER_LEFT]
         else:
             corners = []
-            
+
         cr.set_source_rgba( *MINI_BG_COLOR )
         rounded_rect.drawRoundedRect(
             context = cr,
@@ -428,8 +428,8 @@ class MiniMessageWindow( MessageWindow ):
         cr.fill_preserve()
 
         doc.draw( xPos, yPos, cr )
-        
-            
+
+
     def __layout( self, msg, width, height ):
         text = msg.getMiniXml()
         text = "<document>%s</document>" % text

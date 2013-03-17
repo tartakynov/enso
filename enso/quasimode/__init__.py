@@ -1,6 +1,6 @@
 # Copyright (c) 2008, Humanized, Inc.
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #
@@ -14,7 +14,7 @@
 #    3. Neither the name of Enso nor the names of its contributors may
 #       be used to endorse or promote products derived from this
 #       software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY Humanized, Inc. ``AS IS'' AND ANY
 # EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -150,11 +150,14 @@ class Quasimode:
                                     config.QUASIMODE_END_KEY )
         self.setQuasimodeKeyByName( input.KEYCODE_QUASIMODE_CANCEL,
                                     config.QUASIMODE_CANCEL_KEY )
+        # self.setQuasimodeKeyByName( input.KEYCODE_QUASIMODE_CANCEL2,
+        #                            config.QUASIMODE_CANCEL_KEY2 )
 
         self.__isModal = config.IS_QUASIMODE_MODAL
 
         self.__eventMgr.setModality( self.__isModal )
 
+        self._lastRunCommand = None
 
     def setQuasimodeKeyByName( self, function_name, key_name ):
         # Sets the quasimode to use the given key (key_name must be a
@@ -175,12 +178,15 @@ class Quasimode:
     def setModal( self, isModal ):
         assert type( isModal ) == bool
         config.IS_QUASIMODE_MODAL = isModal
-        
+
         self.__isModal = isModal
         self.__eventMgr.setModality( isModal )
 
     def getSuggestionList( self ):
         return self.__suggestionList
+
+    def getLastRunCommand(self):
+        return self._lastRunCommand
 
     def onKeyEvent( self, eventType, keyCode ):
         """
@@ -195,7 +201,7 @@ class Quasimode:
             elif keyCode == input.KEYCODE_QUASIMODE_END:
                 assert self._inQuasimode
                 self.__quasimodeEnd()
-            elif keyCode == input.KEYCODE_QUASIMODE_CANCEL:
+            elif keyCode in [input.KEYCODE_QUASIMODE_CANCEL, input.KEYCODE_QUASIMODE_CANCEL2]:
                 self.__suggestionList.clearState()
                 self.__quasimodeEnd()
 
@@ -250,7 +256,7 @@ class Quasimode:
         """
         Deletes one character, if possible, from the user text.
         """
-        
+
         oldUserText = self.__suggestionList.getUserText()
         if len( oldUserText ) == 0:
             # There is no user text; backspace does nothing.
@@ -262,7 +268,7 @@ class Quasimode:
         # then hitting backspace snaps the active suggestion back to
         # the user text.
         self.__suggestionList.resetActiveSuggestion()
-        
+
 
     def __quasimodeBegin( self ):
         """
@@ -272,11 +278,11 @@ class Quasimode:
         assert self._inQuasimode == False
 
         if self.__quasimodeWindow == None:
-            logging.info( "Created a new quasimode window!" )
+            logging.debug( "Created a new quasimode window!" )
             self.__quasimodeWindow = TheQuasimodeWindow()
 
         self.__eventMgr.triggerEvent( "startQuasimode" )
-        
+
         self.__eventMgr.registerResponder( self.__onTick, "timer" )
 
         self._inQuasimode = True
@@ -294,7 +300,7 @@ class Quasimode:
         performance reasons.  If a user mashed down 10 keys in
         the space of a few milliseconds, and the quasimode was re-drawn
         on every single keystroke, then the quasimode could suddenly
-        be lagging behind the user a half a second or more. 
+        be lagging behind the user a half a second or more.
         """
 
         # So pychecker doesn't complain...
@@ -324,11 +330,13 @@ class Quasimode:
         self.__eventMgr.removeResponder( self.__onTick )
 
         # LONGTERM TODO: Determine whether deleting or hiding is better.
-        logging.info( "Deleting the quasimode window." )
+        #logging.info( "Deleting the quasimode window." )
+        logging.debug( "Hiding the quasimode window." )
 
         # Delete the Quasimode window.
-        del self.__quasimodeWindow
-        self.__quasimodeWindow = None
+        #del self.__quasimodeWindow
+        #self.__quasimodeWindow = None
+        self.__quasimodeWindow.hide()
 
         activeCommand = self.__suggestionList.getActiveCommand()
         userText = self.__suggestionList.getUserText()
@@ -341,6 +349,7 @@ class Quasimode:
 
         self._inQuasimode = False
         self.__suggestionList.clearState()
+
 
     def __executeCommand( self, cmd, cmdName ):
         """
@@ -358,11 +367,13 @@ class Quasimode:
         logging.info( "COMMAND EXECUTED: %s" % cmdName )
         try:
             cmd.run()
+            self._lastRunCommand = cmd
         except Exception:
             # An exception occured during the execution of the command.
             logging.error( "Command \"%s\" failed." % cmdName )
             logging.error( traceback.format_exc() )
             raise
+
 
     def __showBadCommandMsg( self, userText ):
         """
@@ -382,14 +393,14 @@ class Quasimode:
         text = text % ( badCmd, caption )
 
         messages.displayMessage( text )
-        
+
 
     def __commandSuggestionCaption( self, userText ):
         """
         Creates and returns a caption suggesting one or two commands
         that are similar to userText.
         """
-        
+
         # Retrieve one or two command name suggestions.
         suggestions = self.__cmdManager.retrieveSuggestions( userText )
         cmds = [ s.toText() for s in suggestions ]
@@ -402,3 +413,12 @@ class Quasimode:
             caption = ""
 
         return caption
+
+    def quasimodeBegin(self):
+        assert not self._inQuasimode
+        self.__quasimodeBegin()
+
+    def quasimodeEnd(self):
+        assert self._inQuasimode
+        self.__quasimodeEnd()
+

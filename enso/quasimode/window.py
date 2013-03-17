@@ -1,6 +1,6 @@
 # Copyright (c) 2008, Humanized, Inc.
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #
@@ -14,7 +14,7 @@
 #    3. Neither the name of Enso nor the names of its contributors may
 #       be used to endorse or promote products derived from this
 #       software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY Humanized, Inc. ``AS IS'' AND ANY
 # EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -61,6 +61,8 @@
 # ----------------------------------------------------------------------------
 
 import time
+import atexit
+import logging
 
 from enso.quasimode.linewindows import TextWindow
 from enso.quasimode.layout import QuasimodeLayout
@@ -85,7 +87,7 @@ class TheQuasimodeWindow:
     # (1) have a max size using ellipses and (2) should "vertically
     # wrap" if there are more suggestions than will fit on one screen,
     # the help text should have a max length with ellipsis
-        
+
     def __init__( self ):
         """
         Instantiates the quasimode window, creating all the necessary
@@ -102,14 +104,14 @@ class TheQuasimodeWindow:
             position = [ 0, 0 ],
             )
         top = height
-        
+
         height = AUTOCOMPLETE_SCALE[-1]*HEIGHT_FACTOR
         self.__userTextWindow = TextWindow(
             height = height,
             position = [ 0, top ],
             )
         top += height
-    
+
         self.__suggestionWindows = []
         for i in range( config.QUASIMODE_MAX_SUGGESTIONS ):
             height = SUGGESTION_SCALE[-1]*HEIGHT_FACTOR
@@ -122,7 +124,14 @@ class TheQuasimodeWindow:
         # The time, in float seconds since the epoch, when the last
         # drawing of the quasimode display started.
         self.__drawStart = 0
+        atexit.register(self.__finalize)
 
+
+    def hide( self ):
+        self.__descriptionWindow.hide()
+        self.__userTextWindow.hide()
+        for window in self.__suggestionWindows:
+            window.hide()
 
     def update( self, quasimode, isFullRedraw ):
         """
@@ -190,7 +199,7 @@ class TheQuasimodeWindow:
 
         if self.__suggestionsLeft:
             timeElapsed = time.time() - self.__drawStart
-            if ( (not ignoreTimeElapsed) and 
+            if ( (not ignoreTimeElapsed) and
                  (timeElapsed < config.QUASIMODE_SUGGESTION_DELAY) ):
                 return False
             try:
@@ -200,6 +209,16 @@ class TheQuasimodeWindow:
             except StopIteration:
                 self.__suggestionsLeft = None
         return False
+
+
+    def __finalize( self ):
+        logging.info("__finalize(): Deleting windows")
+        del self.__descriptionWindow
+        self.__descriptionWindow = None
+        del self.__userTextWindow
+        self.__userTextWindow = None
+        for window in self.__suggestionWindows:
+            del window
 
 
 class _SuggestionDrawer:

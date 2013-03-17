@@ -1,6 +1,6 @@
 # Copyright (c) 2008, Humanized, Inc.
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #
@@ -14,7 +14,7 @@
 #    3. Neither the name of Enso nor the names of its contributors may
 #       be used to endorse or promote products derived from this
 #       software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY Humanized, Inc. ``AS IS'' AND ANY
 # EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -28,7 +28,7 @@
 
 """
     Contains all the methods for dealing with text selections.
-    
+
     Usage: Contexts.TextSelection.get() returns a TextSelection object
     ( one of AbstractTextSelection's subclasses as appropriate to the
     front application ).  The client code can then use the various
@@ -70,7 +70,7 @@ CF_HTML = ContextUtils.CF_HTML
 CF_CLIPBOARD_VIEWER_IGNORE = ContextUtils.CF_CLIPBOARD_VIEWER_IGNORE
 CF_UNICODETEXT = win32con.CF_UNICODETEXT
 CF_TEXT = win32con.CF_TEXT
-                                   
+
 
 # List of the clipboard formats in which we are able to output text
 SUPPORTED_FORMATS = [ CF_HTML,
@@ -95,10 +95,10 @@ def _concatenate( currentTextDict, additionalTextDict ):
                    additionalTextDict.get( "text", u"" )
 
     newHtml = currentTextDict.get( "html", u"" ) + \
-              currentTextDict.get( "html", u"" )    
+              currentTextDict.get( "html", u"" )
 
     newDict = {}
-    
+
     if len( newPlainText ) > 0:
         newDict[ "text" ] = newPlainText
     if len( newHtml ) > 0:
@@ -127,7 +127,7 @@ class AbstractTextSelection:
     As an abstract class, this should never be instantiated; it
     defines the interface that all TextSelection objects should
     follow.
-    
+
     This class can also contain protected methods which are utility
     functions shared between different subclasses.
     """
@@ -139,7 +139,7 @@ class AbstractTextSelection:
         containing the text that is selected in the application.
         Attempts to do so without clobbering the clipboard.
         """
-        
+
         ContextUtils.clearClipboard()
 
         ClipboardBackend.prepareForClipboardToChange()
@@ -186,7 +186,7 @@ class AbstractTextSelection:
 
         # We attempt to get two pieces of information from the clipboard:
         # the formatted text and the plain text.
-        
+
         # Try to get plaintext from unicode text in clipboard; this
         # is likely to be a better version of the unformatted text than
         # what we could produce by stripping out format tags, and it's
@@ -226,7 +226,7 @@ class AbstractTextSelection:
         if plainText != None:
             newTextDict[ "text" ] = plainText
         if formatText != None:
-            newTextDict[ "html" ] = formatText                
+            newTextDict[ "html" ] = formatText
 
         return newTextDict
 
@@ -236,7 +236,7 @@ class AbstractTextSelection:
         Simulate Ctrl-C or whatever keystroke causes a copy
         action in the current context.
         """
-        
+
         raise NotImplementedError
 
     def simulateCutKeystroke( self ):
@@ -245,7 +245,7 @@ class AbstractTextSelection:
         Simulate Ctrl-X or whatever keystroke causes a cut
         action in the current context.
         """
-        
+
         raise NotImplementedError
 
     def simulatePasteKeystroke( self ):
@@ -254,7 +254,7 @@ class AbstractTextSelection:
         Simulate Ctrl-V or whatever keystroke causes a paste
         action in the current context.
         """
-        
+
         raise NotImplementedError
 
     def _renderClipboardFormat( self, textDict, format ):
@@ -285,7 +285,7 @@ class AbstractTextSelection:
         # Postcondition:
         assert( type( result ) == str )
         return result
-          
+
 
     def _pasteText( self, textDict ):
         """
@@ -330,13 +330,13 @@ class DefaultTextSelection( AbstractTextSelection ):
     if the currently active application is not one that we have a
     special subclass for.
     """
-    
+
     def simulateCopyKeystroke( self ):
         """
         Simulate Ctrl-C, which is the copy command in most
         applications.
         """
-        
+
         ContextUtils.typeCommandKey( "c" )
 
     def simulateCutKeystroke( self ):
@@ -344,7 +344,7 @@ class DefaultTextSelection( AbstractTextSelection ):
         Simulate Ctrl-X, which is the cut command in most
         applications.
         """
-        
+
         ContextUtils.typeCommandKey( "x" )
 
     def simulatePasteKeystroke( self ):
@@ -352,7 +352,7 @@ class DefaultTextSelection( AbstractTextSelection ):
         Simulate Ctrl-V, which is the paste command in most
         applications.
         """
-        
+
         ContextUtils.typeCommandKey( "v" )
 
     @clipboardPreserving
@@ -402,8 +402,8 @@ class DefaultTextSelection( AbstractTextSelection ):
             currentText = self._getClipboardText()
             newText = _concatenate( currentText, textDict )
             return self._pasteText( newText )
-        
-        
+
+
 class NonReplacingTextSelection( DefaultTextSelection ):
     """
     In some applications, notably MoonEdit and Emacs, a paste
@@ -411,7 +411,7 @@ class NonReplacingTextSelection( DefaultTextSelection ):
     at the cursor.  This is the selection context to use for
     those applications.
     """
-    
+
     @clipboardPreserving
     def replaceSelection( self, textDict ):
         """
@@ -496,7 +496,7 @@ class CommandPromptTextSelection( DefaultTextSelection ):
 
     def simulateCopyKeystroke( self ):
         pass
-    
+
     def simulateCutKeystroke( self ):
         pass
 
@@ -508,7 +508,7 @@ class CommandPromptTextSelection( DefaultTextSelection ):
         """
         return self._pasteText( textDict )
 
-    
+
 # ----------------------------------------------------------------------------
 # Public Function
 # ----------------------------------------------------------------------------

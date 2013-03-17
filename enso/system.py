@@ -26,39 +26,29 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+
 # ----------------------------------------------------------------------------
 #
-#   enso
+#   enso.system
 #
 # ----------------------------------------------------------------------------
 
-def run():
-    """
-    Initializes and runs Enso.
-    """
+"""
+    This module provides access to important end-user system folders.
+"""
 
-    from enso.events import EventManager
-    from enso.quasimode import Quasimode
-    from enso import events, plugins, config, quasimode, webui
-    import logging
+# ----------------------------------------------------------------------------
+# Imports
+# ----------------------------------------------------------------------------
 
-    eventManager = EventManager.get()
-    Quasimode.install( eventManager )
-    plugins.install( eventManager )
+import enso.providers
 
-    def showWelcomeMessage():
-        msgXml = config.OPENING_MSG_XML
-        if msgXml != None:
-            messages.displayMessage( msgXml )
 
-    webui_server = webui.start(eventManager)
+# ----------------------------------------------------------------------------
+# Module variables
+# ----------------------------------------------------------------------------
 
-    eventManager.registerResponder( showWelcomeMessage, "init" )
+# Actual implementation provider for this module.
+__systemImpl = enso.providers.getInterface( "system" )
 
-    try:
-        eventManager.run()
-    except KeyboardInterrupt, e:
-        webui_server.stop()
-    except Exception, e:
-        logging.error(e)
-        webui_server.stop()
+globals().update( __systemImpl.__dict__ )

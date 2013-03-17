@@ -1,6 +1,6 @@
 # Copyright (c) 2008, Humanized, Inc.
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #
@@ -14,7 +14,7 @@
 #    3. Neither the name of Enso nor the names of its contributors may
 #       be used to endorse or promote products derived from this
 #       software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY Humanized, Inc. ``AS IS'' AND ANY
 # EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -60,7 +60,7 @@ class TextWindow:
     rounded corners and an optional "override width", which overides the
     default width (margins + text width).
     """
-    
+
     def __init__( self, height, position ):
         """
         Creates the underlying TransparentWindow and Cairo context.
@@ -75,13 +75,13 @@ class TextWindow:
         xPos, yPos = position
         self.__window = TransparentWindow(xPos + left, yPos, width, height )
         self.__context = self.__window.makeCairoContext()
-        
+
 
     def getHeight( self ):
         """
         LONGTERM TODO: Document this.
         """
-        
+
         return self.__window.getHeight()
 
 
@@ -121,7 +121,7 @@ class TextWindow:
 
         cr.set_source_rgba( *document.background )
         rounded_rect.drawRoundedRect( context = cr,
-                                      rect = ( 0, 0, width, height ), 
+                                      rect = ( 0, 0, width, height ),
                                       softenedCorners = corners )
         cr.fill_preserve()
         cr.restore()

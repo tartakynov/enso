@@ -57,8 +57,5 @@ def provideInterface (name):
     elif name == "selection":
         import enso.platform.linux.selection
         return enso.platform.linux.selection
-    elif name == "scripts_folder":
-        from enso.platform.linux.scriptfolder import get_script_folder_name
-        return get_script_folder_name
     else:
         return None

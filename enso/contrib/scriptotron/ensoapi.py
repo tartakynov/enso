@@ -50,8 +50,9 @@ class EnsoApi(object):
         """
         Returns the location of the Enso scripts folder.
         """
-        from enso.providers import getInterface
-        return getInterface("scripts_folder")()
+        from tracker import SCRIPTS_FOLDER_NAME
+        import os
+        return os.path.expanduser(SCRIPTS_FOLDER_NAME)
 
     def get_commands_from_text(self, text):
         """

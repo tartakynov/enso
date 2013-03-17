@@ -284,13 +284,13 @@ key-repeat problems")
         '''Ungrab a specific key'''
         root_window = self.__display.screen ().root
         root_window.ungrab_key (keycode, 0)
-        
+
     def disable_caps_lock (self):
         '''Disable Caps Lock'''
         if self.__caps_lock:
             logging.debug ("Using xmodmap to disable Caps Lock")
             os.system ('xmodmap -e "clear Lock"')
-        
+
     def enable_caps_lock (self):
         '''Enable Caps Lock'''
         if self.__caps_lock:
@@ -317,7 +317,7 @@ class InputManager (object):
             self.onTick (_TIMER_INTERVAL_IN_MS)
         except KeyboardInterrupt:
             gtk.main_quit ()
-        return True # Return true to keep the timeout running 
+        return True # Return true to keep the timeout running
 
     def __keyCallback (self, info):
         '''Handle callbacks from KeyListener'''

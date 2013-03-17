@@ -1,6 +1,6 @@
 # Copyright (c) 2008, Humanized, Inc.
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #
@@ -14,7 +14,7 @@
 #    3. Neither the name of Enso nor the names of its contributors may
 #       be used to endorse or promote products derived from this
 #       software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY Humanized, Inc. ``AS IS'' AND ANY
 # EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -55,7 +55,7 @@ import enso
 _graphics = enso.providers.getInterface( "graphics" )
 
 _used_font_logged = False
-_default_font_warning_logged = False
+
 
 # ----------------------------------------------------------------------------
 # Fonts
@@ -95,13 +95,13 @@ class Font:
         self.loadInto( self.cairoContext )
 
         # Make our font metrics information visible to the client.
-        
+
         ( self.ascent,
           self.descent,
           self.height,
           self.maxXAdvance,
           self.maxYAdvance ) = self.cairoContext.font_extents()
-        
+
         self.cairoContext.restore()
 
     @classmethod
@@ -140,6 +140,18 @@ class Font:
         Sets the cairo context's current font to this font.
         """
 
+        def get_font_name(font_id):
+            global _used_font_logged
+            font_detail = _graphics.FontRegistry.get().get_font_detail(font_id)
+            if font_detail:
+                font_name = font_detail['filepath']
+                if not _used_font_logged:
+                    logging.info("Font used: " + repr(font_detail))
+                    _used_font_logged = True
+            else:
+                font_name = None
+            return font_name
+
         # TODO THE WINDOWS SPECIAL CASE WITH THE HARD-CODED PATH TO ARIAL
         # IS A HORRIBLE HACK AND MUST BE FIXED ASAP (besides, Arial is
         # ugly).
@@ -147,30 +159,28 @@ class Font:
         if sys.platform.startswith( "win" ):
             if not self.font_name:
                 import os
-                from win32com.shell import shell, shellcon
+                import enso.system
+
                 font_name = None
-                # Check enso.config.FONT_NAME
-                if hasattr(config, "FONT_NAME"):
-                    # Find first valid font
-                    font_registry = _graphics.FontRegistry.get()
-                    global _used_font_logged
-                    for font in config.FONT_NAME:
-                        font_detail = font_registry.get_font_detail(font)
-                        if font_detail:
-                            font_name = font_detail['filepath']
-                            if not _used_font_logged:
-                                logging.info("Font used: " + repr(font_detail))
-                                _used_font_logged = True
-                            break
+
+                if self.isItalic:
+                    if hasattr(config, "FONT_NAME"):
+                        if config.FONT_NAME.has_key("italic"):
+                            font_name = get_font_name(config.FONT_NAME["italic"])
+                        if not font_name:
+                            # fallback if italic font is not available
+                            font_name = get_font_name(config.FONT_NAME["normal"])
+                else:
+                    if hasattr(config, "FONT_NAME") and config.FONT_NAME.has_key("normal"):
+                        font_name = get_font_name(config.FONT_NAME["normal"])
+
                 if not font_name:
+                    logging.error("There is no config.FONT_NAME setting. Using default 'Arial.ttf' font.")
                     # Default is Arial
-                    global _default_font_warning_logged
-                    if not _default_font_warning_logged:
-                        logging.warn("Using hardcoded font Arial. Consider setting your custom font list in config.FONT_NAME")
-                        _default_font_warning_logged = True
                     font_name = os.path.join(
-                        shell.SHGetFolderPath(0, shellcon.CSIDL_FONTS, 0, 0), "arial.ttf")
-                
+                        enso.system.get_system_folder(enso.system.SYSTEMFOLDER_FONTS),
+                        "arial.ttf")
+
                 self.font_name = font_name
 
             cairoContext.select_font_face(
@@ -196,14 +206,14 @@ class FontGlyph:
     """
     Encapsulates a glyph of a font face.
     """
-    
+
     def __init__( self, char, font, cairoContext ):
         """
         Creates the font glyph corresponding to the given Unicode
         character, using the font specified by the given Font object
         and the given cairo context.
         """
-        
+
         # Encode the character to UTF-8 because that's what the cairo
         # API uses.
         self.charAsUtf8 = char.encode("UTF-8")
@@ -211,7 +221,7 @@ class FontGlyph:
         self.font = font
 
         cairoContext.save()
-        
+
         self.font.loadInto( cairoContext )
 
         # Make our font glyph metrics information visible to the client.
@@ -232,7 +242,5 @@ class FontGlyph:
         self.yMin = -yBearing + height
         self.yMax = -yBearing
         self.advance = xAdvance
-        
-        cairoContext.restore()
 
-# vim:set ff=unix tabstop=4 shiftwidth=4 expandtab:
+        cairoContext.restore()

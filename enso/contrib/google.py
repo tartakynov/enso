@@ -1,6 +1,6 @@
 # Copyright (c) 2008, Humanized, Inc.
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #
@@ -14,7 +14,7 @@
 #    3. Neither the name of Enso nor the names of its contributors may
 #       be used to endorse or promote products derived from this
 #       software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY Humanized, Inc. ``AS IS'' AND ANY
 # EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -44,12 +44,10 @@ import urllib
 import locale
 import webbrowser
 
-import enso.config
 from enso.commands import CommandManager, CommandObject
 from enso.commands.factories import ArbitraryPostfixFactory
 from enso import selection
 from enso.messages import displayMessage
-from enso.contrib.scriptotron.tracebacks import safetyNetted
 
 
 # ----------------------------------------------------------------------------
@@ -60,12 +58,12 @@ class GoogleCommand( CommandObject ):
     """
     Implementation of the 'google' command.
     """
-    
+
     def __init__( self, parameter = None ):
         """
         Initializes the google command.
         """
-    
+
         CommandObject.__init__( self )
 
         self.parameter = parameter
@@ -73,8 +71,7 @@ class GoogleCommand( CommandObject ):
         if parameter != None:
             self.setDescription( u"Performs a Google web search for "
                                  u"\u201c%s\u201d." % parameter )
-        
-    @safetyNetted
+
     def run( self ):
         """
         Runs the google command.
@@ -91,48 +88,39 @@ class GoogleCommand( CommandObject ):
 
         if self.parameter != None:
             text = self.parameter.decode()
-            # '...' gets replaced with current selection
-            if "..." in text:
-                seldict = selection.get()
-                text = text.replace(
-                    "...", seldict.get( "text", u"" ).strip().strip("\0"))
         else:
             seldict = selection.get()
             text = seldict.get( "text", u"" )
 
-        text = text.strip().strip("\0")
+        text = text.strip()
         if not text:
             displayMessage( "<p>No text was selected.</p>" )
             return
 
-        BASE_URL = "http://www.google.com/search?q=%s"
+        BASE_URL = "http://www.google.com/search?hl=%s&q=%s"
 
-        if enso.config.PLUGIN_GOOGLE_USE_DEFAULT_LOCALE:
-            # Determine the user's default language setting.  Google
-            # appears to use the two-letter ISO 639-1 code for setting
-            # languages via the 'hl' query argument.
-            languageCode, encoding = locale.getdefaultlocale()
-            if languageCode:
-                language = languageCode.split( "_" )[0]
-            else:
-                language = "en"
-            BASE_URL = "%s&hl=%s" % (BASE_URL, language)
+        # Determine the user's default language setting.  Google
+        # appears to use the two-letter ISO 639-1 code for setting
+        # languages via the 'hl' query argument.
+        languageCode, encoding = locale.getdefaultlocale()
+        if languageCode:
+            language = languageCode.split( "_" )[0]
+        else:
+            language = "en"
 
         # The following is standard convention for transmitting
         # unicode through a URL.
         text = urllib.quote_plus( text.encode("utf-8") )
 
-        finalQuery = BASE_URL % text
+        finalQuery = BASE_URL % ( language, text )
 
         if len( finalQuery ) > MAX_QUERY_LENGTH:
             displayMessage( "<p>Your query is too long.</p>" )
         else:
-            # Catch exception, because webbrowser.open sometimes raises exception
-            # without any reason
             try:
                 webbrowser.open_new_tab( finalQuery )
-            except WindowsError, e:
-                logging.warning(e)
+            except:
+                pass
 
 
 class GoogleCommandFactory( ArbitraryPostfixFactory ):
@@ -143,7 +131,7 @@ class GoogleCommandFactory( ArbitraryPostfixFactory ):
     HELP_TEXT = "search terms"
     PREFIX = "google "
     NAME = "google {search terms}"
-    
+
     def _generateCommandObj( self, postfix ):
         if postfix:
             cmd = GoogleCommand( postfix )
@@ -165,5 +153,3 @@ def load():
         GoogleCommandFactory.NAME,
         GoogleCommandFactory()
         )
-
-# vim:set tabstop=4 shiftwidth=4 expandtab:

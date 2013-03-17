@@ -8,16 +8,22 @@ from struct import *
 import Queue
 import threading
 import logging
-from win32com.shell import shell, shellcon
 
 from enso.utils.memoize import memoized
+from enso.platform.win32.system import Folders
+import enso.system
 
-FONT_DIR = shell.SHGetFolderPath(0, shellcon.CSIDL_FONTS, 0, 0)
+FONT_DIR = enso.system.get_system_folder(enso.system.SYSTEMFOLDER_FONTS)
 FONT_LIST_REG_KEY = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts"
 RE_BARE_FONT_NAME = re.compile("^(.*) \\(.*\\)$", re.I)
 
-_font_detail_cache_lock = threading.Lock()
 
+def not_implemented_yet(f):
+    """ Not-Implemented-Yet function decorator """
+    def wrap(*args, **kw):
+        logging.error("The function '%s' is not implemented yet" % f.__name__)
+        raise NotImplementedError, "The function '%s' is not implemented yet" % f.__name__
+    return wrap
 
 
 def synchronized(lock):
@@ -33,7 +39,7 @@ def synchronized(lock):
         return newFunction
     return wrap
 
-
+_font_detail_cache_lock = threading.Lock()
 
 class FontRegistry:
 
@@ -225,4 +231,34 @@ class FontRegistry:
 
         return font_info
 
-# vim:set ff=unix tabstop=4 shiftwidth=4 expandtab:
+
+    @not_implemented_yet
+    def get_font_registry(self):
+        font_registry = {}
+        reghandle = None
+        try:
+            reghandle = reg.ConnectRegistry(None, reg.HKEY_LOCAL_MACHINE)
+            regkey = reg.OpenKey(reghandle, FONT_LIST_REG_KEY)
+            i = 0
+            try:
+                while True:
+                    font_name, font_file, _ = reg.EnumValue(regkey, i)
+                    font_path = FONT_DIR + "\\" + font_file
+                    if os.path.isfile(font_path):
+                        #print font_def[0], font_path
+                        font_registry[font_name] = (font_name, font_path)
+                        font_registry[font_file] = (font_name, font_path)
+                    i += 1
+            except:
+                pass
+        except:
+            pass
+
+        if reghandle is not None:
+            try:
+                reg.CloseKey(reghandle)
+            except:
+                pass
+            reghandle = None
+
+        return font_registry

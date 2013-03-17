@@ -1,6 +1,6 @@
 # Copyright (c) 2008, Humanized, Inc.
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #
@@ -14,7 +14,7 @@
 #    3. Neither the name of Enso nor the names of its contributors may
 #       be used to endorse or promote products derived from this
 #       software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY Humanized, Inc. ``AS IS'' AND ANY
 # EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -41,14 +41,6 @@ if not sys.platform.startswith("win"):
 # applications can get in the way
 os.environ["PATH"] = "%s;%s" % (os.path.abspath( __path__[0] ), os.environ["PATH"])
 
-def get_script_folder_name():
-  """Returns the folder where Enso commands are found. This function
-     is responsible for ensuring that this folder exists: it must not
-     return a path that is not present! It is expected to place this
-     folder in some platform-specific logical location."""
-  raise NotImplementedError("This platform does not define a "
-      "scripts folder (this needs fixing)")
-
 # Import and return the Win32 implementation of the requested interface.
 
 def provideInterface( name ):
@@ -71,10 +63,8 @@ def provideInterface( name ):
     elif name == "selection":
         import enso.platform.win32.selection
         return enso.platform.win32.selection
-    elif name == "scripts_folder":
-        from enso.platform.win32.scriptfolder import get_script_folder_name
-        return get_script_folder_name
+    elif name == "system":
+        import enso.platform.win32.system
+        return enso.platform.win32.system
     else:
         return None
-
-# vim:set ff=unix tabstop=4 shiftwidth=4 expandtab:

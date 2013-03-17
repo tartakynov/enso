@@ -1,6 +1,6 @@
 # Copyright (c) 2008, Humanized, Inc.
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #
@@ -14,7 +14,7 @@
 #    3. Neither the name of Enso nor the names of its contributors may
 #       be used to endorse or promote products derived from this
 #       software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY Humanized, Inc. ``AS IS'' AND ANY
 # EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -97,9 +97,9 @@ def _newLineStyleRegistry():
     Creates a new style registry for laying out one of the quasimode's
     text lines.
     """
-    
+
     styles = xmltextlayout.StyleRegistry()
-    styles.add( 
+    styles.add(
         "document",
         font_family = "Gentium",
         font_style = "normal",
@@ -121,7 +121,7 @@ def _newLineStyleRegistry():
     styles.add( "alt" )
     return styles
 
-    
+
 _AUTOCOMPLETE_STYLES = _newLineStyleRegistry()
 _SUGGESTION_STYLES   = _newLineStyleRegistry()
 _DESCRIPTION_STYLES  = _newLineStyleRegistry()
@@ -176,7 +176,7 @@ def _updateStyles( styles, scale, size ):
     the style registry 'styles', based on 'size' (a font size
     in points) and 'scale' (a list of usable font sizes in points).
     """
-    
+
     _updateStyleSizes( styles, size )
     if size == scale[0]:
         # We're at the smallest possible size.  Ellispify if needed.
@@ -189,7 +189,7 @@ def retrieveDescriptionStyles( size = DESCRIPTION_SCALE[-1] ):
     """
     LONGTERM TODO: Document this.
     """
-    
+
     return _updateStyles( _DESCRIPTION_STYLES, DESCRIPTION_SCALE, size )
 
 
@@ -197,7 +197,7 @@ def retrieveAutocompleteStyles( active = True, size = LARGE_SCALE[-1] ):
     """
     LONGTERM TODO: Document this.
     """
-    
+
     styles =  _updateStyles( _AUTOCOMPLETE_STYLES, AUTOCOMPLETE_SCALE, size )
     _updateSuggestionColors( styles, active )
     return styles
@@ -207,7 +207,7 @@ def retrieveSuggestionStyles( active = True, size = SMALL_SCALE[-1] ):
     """
     LONGTERM TODO: Document this.
     """
-    
+
     styles = _updateStyles( _SUGGESTION_STYLES, SUGGESTION_SCALE, size )
     _updateSuggestionColors( styles, active )
     return styles
@@ -221,7 +221,7 @@ def layoutXmlLine( xml_data, styles, scale ):
     not fit even at the smallest size of scale, then ellipsifies
     the text at that size.
     """
-    
+
     document = None
     for size in reversed( scale ):
         try:
@@ -267,7 +267,7 @@ class QuasimodeLayout:
     """
 
     LINE_XML = "<document><line>%s</line></document>"
-    
+
     def __init__( self, quasimode ):
         """
         Computes and stores the layout metrics for the quasimode.
@@ -277,12 +277,12 @@ class QuasimodeLayout:
         self.__newSmoothRags()
         self.__newRoundCorners()
         self.__setBackgroundColors()
-        
+
     def __newCreateLines( self, quasimode ):
         """
         LONGTERM TODO: Document this.
         """
-    
+
         lines = []
 
         suggestionList = quasimode.getSuggestionList()
@@ -292,7 +292,7 @@ class QuasimodeLayout:
         activeIndex = suggestionList.getActiveIndex()
 
         lines.append( layoutXmlLine(
-            xml_data = self.LINE_XML % description, 
+            xml_data = self.LINE_XML % description,
             styles = retrieveDescriptionStyles(),
             scale = DESCRIPTION_SCALE,
             ) )
@@ -316,22 +316,22 @@ class QuasimodeLayout:
                 styles = retrieveSuggestionStyles( active = isActive ),
                 scale = SUGGESTION_SCALE,
                 ) )
-            
+
         return lines
-            
+
 
     def __setBackgroundColors( self ):
         """
         LONGTERM TODO: Document this.
         """
-    
+
         self.newLines[0].background = \
              xmltextlayout.colorHashToRgba( DESCRIPTION_BACKGROUND_COLOR )
         for i in range( 1, len(self.newLines) ):
             self.newLines[i].background = \
                 xmltextlayout.colorHashToRgba( MAIN_BACKGROUND_COLOR )
-                
-    
+
+
     def __newSmoothRags( self ):
         """
         Uses the computed size metrics to smooth the rags of the
@@ -364,7 +364,7 @@ class QuasimodeLayout:
 
         for l in self.newLines:
             l.ragWidth = _computeWidth( l )
-            
+
         for i in range( MAX_CYCLES ):
             widths = [ l.ragWidth for l in self.newLines ]
             for i in range( len(widths) - 1 ):

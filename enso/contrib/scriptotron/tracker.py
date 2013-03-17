@@ -11,8 +11,12 @@ from enso.contrib.scriptotron import cmdretriever
 from enso.contrib.scriptotron import ensoapi
 from enso.contrib.scriptotron import concurrency
 
-# This may no longer be required (it was for backward compat)
-SCRIPTS_FILE_NAME = "~/.ensocommands"
+import enso.system
+
+# These should be defined in a platform-specific back end
+SCRIPTS_FILE_NAME = os.path.expanduser("~/.ensocommands")
+SCRIPTS_FOLDER_NAME = os.path.join(
+    enso.system.SPECIALFOLDER_ENSOLOCAL, "commands")
 
 class ScriptCommandTracker:
     def __init__( self, commandManager, eventManager ):
@@ -35,12 +39,16 @@ class ScriptCommandTracker:
         for handler in self._qmStartEvents:
             self._callHandler( handler )
 
-    def clearCommands( self ):
-        for cmdExpr in self._cmdExprs:
-            self._cmdMgr.unregisterCommand( cmdExpr )
-        self._cmdExprs = []
-        self._qmStartEvents[:] = []
-        self._genMgr.reset()
+    def clearCommands( self, cmdExprExt = None ):
+	if cmdExprExt:
+            for cmdExpr in cmdExprExt:
+                self._cmdMgr.unregisterCommand( cmdExpr )
+	else:		    
+            for cmdExpr in self._cmdExprs:
+                self._cmdMgr.unregisterCommand( cmdExpr )
+            self._cmdExprs = []
+            self._qmStartEvents[:] = []
+            self._genMgr.reset()
 
     def _registerCommand( self, cmdObj, cmdExpr ):
         try:
@@ -64,11 +72,13 @@ class ScriptTracker:
     def __init__( self, eventManager, commandManager ):
         self._scriptCmdTracker = ScriptCommandTracker( commandManager,
                                                        eventManager )
-        self._scriptFilename = os.path.expanduser(SCRIPTS_FILE_NAME )
-        from enso.providers import getInterface
-        self._scriptFolder = getInterface("scripts_folder")()
+        self._scriptFilename = SCRIPTS_FILE_NAME
+        self._scriptFolder = SCRIPTS_FOLDER_NAME
         self._lastMods = {}
         self._registerDependencies()
+	self._commandsInFile = {}
+        # Call it now, otherwise there is a delay on first quasimode invocation
+        self._updateScripts()
 
         eventManager.registerResponder(
             self._updateScripts,
@@ -88,7 +98,7 @@ class ScriptTracker:
         code = compile( text, filename, "exec" )
         exec code in allGlobals
         return allGlobals
-    
+
     def _getCommandFiles( self ):
         try:
             commandFiles = [
@@ -100,10 +110,17 @@ class ScriptTracker:
             commandFiles = []
         return commandFiles
 
-    def _reloadPyScripts( self ):
-        self._scriptCmdTracker.clearCommands()
-        commandFiles = [self._scriptFilename] + self._getCommandFiles()
-        print commandFiles
+    def _reloadPyScripts( self, files = None ):
+        self._scriptCmdTracker.clearCommands( files )
+        commandFiles = [self._scriptFilename]
+        if files:
+            commandFiles = commandFiles + files
+            print "Files to reload: ", commandFiles
+        else:
+            commandFiles = commandFiles + self._getCommandFiles()
+
+        logging.debug(commandFiles)
+
         for f in commandFiles:
             try:
                 text = open( f, "r" ).read()
@@ -117,8 +134,11 @@ class ScriptTracker:
 
             if allGlobals is not None:
                 infos = cmdretriever.getCommandsFromObjects( allGlobals )
+		#print f, infos
                 self._scriptCmdTracker.registerNewCommands( infos )
                 self._registerDependencies( allGlobals )
+		self._commandsInFile[f] = infos
+
 
     def _registerDependencies( self, allGlobals = None ):
         baseDeps = [ self._scriptFilename ] + self._getCommandFiles()
@@ -130,7 +150,7 @@ class ScriptTracker:
                 obj.func_code.co_filename
                 for obj in allGlobals.values()
                 if ( (hasattr(obj, "__module__")) and
-                     (obj.__module__ is None) and 
+                     (obj.__module__ is None) and
                      (hasattr(obj, "func_code")) )
                 ]
         else:
@@ -140,19 +160,23 @@ class ScriptTracker:
 
     def _updateScripts( self ):
         shouldReload = False
+        filesToReload = {}
         for fileName in self._fileDependencies:
             if os.path.exists( fileName ):
                 lastMod = os.stat( fileName ).st_mtime
                 if lastMod != self._lastMods.get(fileName):
                     self._lastMods[fileName] = lastMod
+                    filesToReload[fileName] = lastMod
                     shouldReload = True
 
         for fileName in self._getCommandFiles():
             if fileName not in self._fileDependencies:
                 self._fileDependencies.append(fileName)
                 self._lastMods[fileName] = os.stat( fileName ).st_mtime
+                filesToReload[fileName] = lastMod
                 shouldReload = True
 
         if shouldReload:
-            self._reloadPyScripts()
+            #self._reloadPyScripts(filesToReload.keys())
+	    self._reloadPyScripts()
 
