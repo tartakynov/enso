@@ -77,3 +77,4 @@ def provideInterface( name ):
     else:
         return None
 
+# vim:set ff=unix tabstop=4 shiftwidth=4 expandtab:

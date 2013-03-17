@@ -44,10 +44,18 @@
 # Imports
 # ----------------------------------------------------------------------------
 
+import logging
+
+from enso import config
 from enso import cairo
 
 from enso.utils.memoize import memoized
 
+import enso
+_graphics = enso.providers.getInterface( "graphics" )
+
+_used_font_logged = False
+_default_font_warning_logged = False
 
 # ----------------------------------------------------------------------------
 # Fonts
@@ -69,6 +77,7 @@ class Font:
         self.name = name
         self.size = size
         self.isItalic = isItalic
+        self.font_name = None
 
         if self.isItalic:
             self.slant = cairo.FONT_SLANT_ITALIC
@@ -131,14 +140,41 @@ class Font:
         Sets the cairo context's current font to this font.
         """
 
-
         # TODO THE WINDOWS SPECIAL CASE WITH THE HARD-CODED PATH TO ARIAL
         # IS A HORRIBLE HACK AND MUST BE FIXED ASAP (besides, Arial is
         # ugly).
         import sys
         if sys.platform.startswith( "win" ):
+            if not self.font_name:
+                import os
+                from win32com.shell import shell, shellcon
+                font_name = None
+                # Check enso.config.FONT_NAME
+                if hasattr(config, "FONT_NAME"):
+                    # Find first valid font
+                    font_registry = _graphics.FontRegistry.get()
+                    global _used_font_logged
+                    for font in config.FONT_NAME:
+                        font_detail = font_registry.get_font_detail(font)
+                        if font_detail:
+                            font_name = font_detail['filepath']
+                            if not _used_font_logged:
+                                logging.info("Font used: " + repr(font_detail))
+                                _used_font_logged = True
+                            break
+                if not font_name:
+                    # Default is Arial
+                    global _default_font_warning_logged
+                    if not _default_font_warning_logged:
+                        logging.warn("Using hardcoded font Arial. Consider setting your custom font list in config.FONT_NAME")
+                        _default_font_warning_logged = True
+                    font_name = os.path.join(
+                        shell.SHGetFolderPath(0, shellcon.CSIDL_FONTS, 0, 0), "arial.ttf")
+                
+                self.font_name = font_name
+
             cairoContext.select_font_face(
-                "c:/WINDOWS/Fonts/arial.ttf",
+                self.font_name,
                 self.slant,
                 cairo.FONT_WEIGHT_NORMAL
                 )
@@ -198,3 +234,5 @@ class FontGlyph:
         self.advance = xAdvance
         
         cairoContext.restore()
+
+# vim:set ff=unix tabstop=4 shiftwidth=4 expandtab:
