@@ -75,3 +75,5 @@ SPECIALFOLDER_ENSOLOCAL = os.path.join(get_system_folder(SYSTEMFOLDER_APPDATALOC
 # Enso special folder - Enso's Learn As Open Commands
 SPECIALFOLDER_ENSOLEARNAS = os.path.join(get_system_folder(SYSTEMFOLDER_MYDOCUMENTS), "Enso's Learn As Open Commands").encode('mbcs') #(sys.getfilesystemencoding())
 
+# Enso special folder - Enso executable's folder
+SPECIALFOLDER_ENSOEXECUTABLE = os.getcwd().encode('mbcs')

@@ -16,7 +16,7 @@ import enso.system
 # These should be defined in a platform-specific back end
 SCRIPTS_FILE_NAME = os.path.expanduser("~/.ensocommands")
 SCRIPTS_FOLDER_NAME = os.path.join(
-    enso.system.SPECIALFOLDER_ENSOLOCAL, "commands")
+    enso.system.SPECIALFOLDER_ENSOEXECUTABLE, "commands")
 
 class ScriptCommandTracker:
     def __init__( self, commandManager, eventManager ):
