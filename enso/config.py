@@ -83,4 +83,4 @@ PLUGINS = ["enso.contrib.scriptotron",
            "enso.contrib.google",
            "enso.contrib.evaluate"]
 
-FONT_NAME = {"normal" : "Gentium", "italic" : "Gentium Italic"}
+FONT_NAME = {"normal" : "Gentium (Humanized)", "italic" : "Gentium Italic"}
