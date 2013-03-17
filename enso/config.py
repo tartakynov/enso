@@ -5,12 +5,13 @@
 # The keys to start, exit, and cancel the quasimode.
 # Their values are strings referring to the names of constants defined
 # in the os-specific input module in use.
-QUASIMODE_START_KEY = "KEYCODE_CAPITAL"
+QUASIMODE_START_KEY = "KEYCODE_RCONTROL"
 QUASIMODE_END_KEY = "KEYCODE_RETURN"
 QUASIMODE_CANCEL_KEY = "KEYCODE_ESCAPE"
+QUASIMODE_CANCEL_KEY2 = "KEYCODE_ESCAPE"
 
 # Whether the Quasimode is actually modal ("sticky").
-IS_QUASIMODE_MODAL = False
+IS_QUASIMODE_MODAL = True
 
 # Amount of time, in seconds (float), to wait from the time
 # that the quasimode begins drawing to the time that the
@@ -30,8 +31,8 @@ QUASIMODE_MIN_AUTOCOMPLETE_CHARS = 2
 BAD_COMMAND_MSG = "<p><command>%s</command> is not a command.</p>"\
                   "%s"
 
-# Minimum number of characters that should have been typed into the 
-# quasimode for a bad command message to be shown. 
+# Minimum number of characters that should have been typed into the
+# quasimode for a bad command message to be shown.
 BAD_COMMAND_MSG_MIN_CHARS = 2
 
 # The captions for the above message, indicating commands that are related
@@ -57,12 +58,17 @@ MINI_MSG_HELP_XML = "<p>The <command>hide mini messages</command>" \
     " and <command>put</command> commands control" \
     " these mini-messages.</p>"
 
+ABOUT_BOX_XML = u"<p><command>Enso</command> Community Edition</p>" \
+    "<caption> </caption>" \
+    "<p>Copyright &#169; 2008 <command>Humanized, Inc.</command></p>" \
+    "<p>Copyright &#169; 2008-2009 <command>Enso Community</command></p>" \
+    "<p>Version 1.0</p>"
+
+
 # List of default platforms supported by Enso; platforms are specific
 # types of providers that provide a suite of platform-specific
 # functionality.
-DEFAULT_PLATFORMS = ["enso.platform.osx",
-                     "enso.platform.linux",
-                     "enso.platform.win32"]
+DEFAULT_PLATFORMS = ["enso.platform.win32"]
 
 # List of modules/packages that support the provider interface to
 # provide required platform-specific functionality to Enso.
@@ -77,8 +83,4 @@ PLUGINS = ["enso.contrib.scriptotron",
            "enso.contrib.google",
            "enso.contrib.evaluate"]
 
-# Detect default system locale and use it for google search.
-# If set to False, no locale is forced.
-PLUGIN_GOOGLE_USE_DEFAULT_LOCALE = True
-
-# vim:set tabstop=4 shiftwidth=4 expandtab:
+FONT_NAME = {"normal" : "Gentium", "italic" : "Gentium Italic"}
