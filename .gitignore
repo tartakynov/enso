@@ -1,0 +1,8 @@
+*.pyc
+build/*
+dist/*
+*.dll
+*.lib
+*.obj
+*.pyd
+.sconsign.dblite
