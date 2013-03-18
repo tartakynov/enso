@@ -4,19 +4,23 @@
 
 Enso is an extensible, cross-platform quasimodal linguistic CLI written in Python by [Humanized, Inc](http://www.humanized.com). 
 
-Enso Launcher is designed to give you instant access to your applications and windows. With a few easily remembered keystrokes, you can launch an application, switch to a window by name, and control the state of your windows.
+> Enso Launcher is designed to give you instant access to your applications and windows. With a few easily remembered keystrokes, you can launch an application, switch to a window by name, and control the state of your windows.
 
 Learn more at http://humanized.com/enso/launcher/
 
 ##Download
 
-[Download](https://bitbucket.org/tartakynov/enso/downloads/EnsoCommunitySetup.exe) latest stable build.
+[Download](https://bitbucket.org/tartakynov/enso/downloads/EnsoCommunitySetup.exe) latest stable build for Windows.
+
+**Please note** that in current version to run enso you don't need to down the CAPSLOCK key as in the original version.  
+Just hit RIGHT CONTROL key once and type your command.
+
 
 ##Commands
 
-Enso Launcher includes some "little things" as well. In the same way that you can open applications and find windows, you can minimize and maximize windows. And, as is the case with all of Enso, the process is so effortless that you'll forget you're doing it.
+> Enso Launcher includes some "little things" as well. In the same way that you can open applications and find windows, you can minimize and maximize windows. And, as is the case with all of Enso, the process is so effortless that you'll forget you're doing it.
 
-To run enso you don't need to down the CAPSLOCK key as in the original version.  Just hit Right CONTROL key once and type your command.
+First press RIGHT CONTROL key to make Enso command line appear and type one of the following commands
 
 ###Basic commands
 
