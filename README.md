@@ -1,6 +1,6 @@
 # Enso Launcher
 
-<img src="https://raw.github.com/tartakynov/enso/md-resources/screen.png" />
+<img src="https://raw.github.com/tartakynov/enso/md-resources/screen.PNG" />
 
 Enso is an extensible, cross-platform quasimodal linguistic CLI written in Python by [Humanized, Inc](http://www.humanized.com). 
 
@@ -46,4 +46,4 @@ and more.
 Enso commands are a python scripts located in the 'commands' folder under the Enso root directory. Please check out those scripts to learn more about Enso API.
 
 Light control in the office with Enso
-[![ScreenShot](https://raw.github.com/tartakynov/enso/md-resources/enso-light-youtube.png)](http://www.youtube.com/watch?v=yU_ENetpz_I)
+[![ScreenShot](https://raw.github.com/tartakynov/enso/md-resources/enso-light-youtube.PNG)](http://www.youtube.com/watch?v=yU_ENetpz_I)
