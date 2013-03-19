@@ -1,0 +1,6 @@
+How to compile Enso as win32 executable:
+1. Check out prerequisites outlined in the README.win32 (in the root folder)
+2. Make sure you have installed py2exe extension to your python
+3. run compile.bat
+4. if everything is OK then you have a 'dist' folder located in the root with 'enso.exe' and
+other stuff
