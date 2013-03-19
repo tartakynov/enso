@@ -24,6 +24,7 @@ First press RIGHT CONTROL key to make Enso command line appear and type one of t
 
 ###Basic commands
 
+* help
 * open
 * open with
 * lean as open
