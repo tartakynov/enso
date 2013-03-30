@@ -65,7 +65,10 @@ static int _startQuasimodeKeycode;
 static int _endQuasimodeKeycode;
 
 /* Keycode to cancel the quasimode. */
-static int _cancelQuasimodeKeycode;
+static int _cancelQuasimodeKeycode1;
+
+/* Second keycode to cancel the quasimode. */
+static int _cancelQuasimodeKeycode2;
 
 /* If true, quasimode behaves modally. */
 static int _isModal = FALSE;
@@ -476,7 +479,8 @@ _keyEventProcessFunction( int event_type,
 
             if ( _inQuasimode && _isCurrentlyModal &&
                  ( (vkCode == _endQuasimodeKeycode) ||
-                   (vkCode == _cancelQuasimodeKeycode) ) )
+                   (vkCode == _cancelQuasimodeKeycode1) || 
+                   (vkCode == _cancelQuasimodeKeycode2) ) )
             {
                 /* We are leaving the modal quasimode in some way. */
                 int quasimodeEventType;
@@ -484,11 +488,13 @@ _keyEventProcessFunction( int event_type,
                 _inQuasimode = FALSE;
 
                 /* Now figure out if we're ending or cancelling it. */
-                if (vkCode == _endQuasimodeKeycode)
+                if ( vkCode == _endQuasimodeKeycode )
                     quasimodeEventType = KEYCODE_QUASIMODE_END;
-                else
-                    quasimodeEventType = KEYCODE_QUASIMODE_CANCEL;
-
+                else if ( vkCode == _cancelQuasimodeKeycode1)
+                    quasimodeEventType = KEYCODE_QUASIMODE_CANCEL1;
+                else 
+                    quasimodeEventType = KEYCODE_QUASIMODE_CANCEL2;
+                    
                 errorCode = PostThreadMessage( _keyThreadId,
                                                WM_USER_KEYPRESS,
                                                EVENT_KEY_QUASIMODE,
@@ -593,8 +599,10 @@ setQuasimodeKeycode( int quasimodeKeycode,
     case KEYCODE_QUASIMODE_END:
         _endQuasimodeKeycode = keycode;
         break;
-    case KEYCODE_QUASIMODE_CANCEL:
-        _cancelQuasimodeKeycode = keycode;
+    case KEYCODE_QUASIMODE_CANCEL1:
+        _cancelQuasimodeKeycode1 = keycode;
+    case KEYCODE_QUASIMODE_CANCEL2:
+        _cancelQuasimodeKeycode2 = keycode;
         break;
     default:
         errorMsg( "Invalid quasimodeKeycode." );
@@ -622,8 +630,11 @@ getQuasimodeKeycode( int quasimodeKeycode )
     case KEYCODE_QUASIMODE_END:
         keycode = _endQuasimodeKeycode;
         break;
-    case KEYCODE_QUASIMODE_CANCEL:
-        keycode = _cancelQuasimodeKeycode;
+    case KEYCODE_QUASIMODE_CANCEL1:
+        keycode = _cancelQuasimodeKeycode1;
+        break;
+    case KEYCODE_QUASIMODE_CANCEL2:
+        keycode = _cancelQuasimodeKeycode2;
         break;
     default:
         errorMsg( "Invalid quasimodeKeycode." );

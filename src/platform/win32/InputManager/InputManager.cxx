@@ -73,7 +73,8 @@ InputManager::InputManager( void ) :
     ::initHookHandlers();
     ::setQuasimodeKeycode( KEYCODE_QUASIMODE_START, VK_CAPITAL );
     ::setQuasimodeKeycode( KEYCODE_QUASIMODE_END, VK_RETURN );
-    ::setQuasimodeKeycode( KEYCODE_QUASIMODE_CANCEL, VK_ESCAPE );
+    ::setQuasimodeKeycode( KEYCODE_QUASIMODE_CANCEL1, VK_ESCAPE );
+    ::setQuasimodeKeycode( KEYCODE_QUASIMODE_CANCEL2, VK_RCONTROL );
 }
 
 

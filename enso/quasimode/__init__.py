@@ -148,10 +148,10 @@ class Quasimode:
                                     config.QUASIMODE_START_KEY )
         self.setQuasimodeKeyByName( input.KEYCODE_QUASIMODE_END,
                                     config.QUASIMODE_END_KEY )
-        self.setQuasimodeKeyByName( input.KEYCODE_QUASIMODE_CANCEL,
-                                    config.QUASIMODE_CANCEL_KEY )
-        # self.setQuasimodeKeyByName( input.KEYCODE_QUASIMODE_CANCEL2,
-        #                            config.QUASIMODE_CANCEL_KEY2 )
+        self.setQuasimodeKeyByName( input.KEYCODE_QUASIMODE_CANCEL1,
+                                    config.QUASIMODE_CANCEL_KEY1 )
+        self.setQuasimodeKeyByName( input.KEYCODE_QUASIMODE_CANCEL2,
+                                    config.QUASIMODE_CANCEL_KEY2 )
 
         self.__isModal = config.IS_QUASIMODE_MODAL
 
@@ -201,7 +201,7 @@ class Quasimode:
             elif keyCode == input.KEYCODE_QUASIMODE_END:
                 assert self._inQuasimode
                 self.__quasimodeEnd()
-            elif keyCode in [input.KEYCODE_QUASIMODE_CANCEL, input.KEYCODE_QUASIMODE_CANCEL2]:
+            elif keyCode in [input.KEYCODE_QUASIMODE_CANCEL1, input.KEYCODE_QUASIMODE_CANCEL2]:
                 self.__suggestionList.clearState()
                 self.__quasimodeEnd()
 
