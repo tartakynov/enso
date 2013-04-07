@@ -148,7 +148,8 @@ FT_BEGIN_HEADER
   /*                                                                       */
   /*   Define this macro if you want to enable this `feature'.             */
   /*                                                                       */
-#define FT_CONFIG_OPTION_USE_LZW
+/* HUMANIZED EDIT: Disabling this feature. -Atul */ /* ENSO */
+/* #define FT_CONFIG_OPTION_USE_LZW */
 
 
   /*************************************************************************/
@@ -163,7 +164,8 @@ FT_BEGIN_HEADER
   /*   Define this macro if you want to enable this `feature'.  See also   */
   /*   the macro FT_CONFIG_OPTION_SYSTEM_ZLIB below.                       */
   /*                                                                       */
-#define FT_CONFIG_OPTION_USE_ZLIB
+/* HUMANIZED EDIT: Disabling this feature. -Atul */ /* ENSO */
+/* #define FT_CONFIG_OPTION_USE_ZLIB */
 
 
   /*************************************************************************/
@@ -255,6 +257,22 @@ FT_BEGIN_HEADER
 /* #define FT_EXPORT(x)      extern x */
 /* #define FT_EXPORT_DEF(x)  x */
 
+/* HUMANIZED EDIT: Providing Windows-specific values, and adding a
+ * custom HUMANIZED_FT2_USE_DL_EXPORT flag. -Atul */ /* ENSO */
+
+/* Define FT_EXPORT to mean different things depending on whether
+   FreeType itself is including this file, or a client of FreeType is
+   including it.  If the former, then we want to declare all FreeType
+   API functions as exported DLL functions; if the latter, we want to
+   declare them as imported DLL functions. */
+
+#ifdef HUMANIZED_FT2_USE_DL_EXPORT
+#define  FT_EXPORT(x)       __declspec( dllexport ) x
+#else
+#define  FT_EXPORT(x)       __declspec( dllimport ) x
+#endif
+
+#define  FT_EXPORT_DEF(x)   __declspec( dllexport ) x
 
   /*************************************************************************/
   /*                                                                       */
@@ -309,7 +327,8 @@ FT_BEGIN_HEADER
   /*                                                                       */
   /*   Note that the `FOND' resource isn't checked.                        */
   /*                                                                       */
-#define FT_CONFIG_OPTION_MAC_FONTS
+/* HUMANIZED EDIT: Disabling this feature. -Atul */ /* ENSO */
+/* #define FT_CONFIG_OPTION_MAC_FONTS */
 
 
   /*************************************************************************/

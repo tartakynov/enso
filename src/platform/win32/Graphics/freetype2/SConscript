@@ -43,7 +43,8 @@ Import( "env" )
 env = env.Copy()
 
 cppDefines = {
-    "FT2_BUILD_LIBRARY" : "1",
+    "HUMANIZED_FT2_USE_DL_EXPORT" : "1",
+    "FT2_BUILD_LIBRARY" : "1"
     }
 
 # We're not using a glob.glob() here; this list of files was
