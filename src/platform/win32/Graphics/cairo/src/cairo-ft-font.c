@@ -166,6 +166,10 @@ _cairo_ft_unscaled_font_keys_equal (const void *key_a,
 static void
 _cairo_ft_unscaled_font_fini (cairo_ft_unscaled_font_t *unscaled);
 
+static cairo_status_t
+_cairo_ft_font_face_create_for_toy_enso (cairo_toy_font_face_t *toy_face,
+				    cairo_font_face_t **font_face_out); /* ENSO EDIT */
+
 typedef enum _cairo_ft_extra_flags {
     CAIRO_FT_OPTIONS_HINT_METRICS = (1 << 0),
     CAIRO_FT_OPTIONS_EMBOLDEN = (1 << 1)
@@ -2627,11 +2631,11 @@ const cairo_font_face_backend_t _cairo_ft_font_face_backend = {
 #if CAIRO_HAS_FC_FONT
     _cairo_ft_font_face_create_for_toy,
 #else
-    NULL,
+    _cairo_ft_font_face_create_for_toy_enso, /* ENSO EDIT */
 #endif
     _cairo_ft_font_face_destroy,
     _cairo_ft_font_face_scaled_font_create,
-    _cairo_ft_font_face_get_implementation
+    NULL // _cairo_ft_font_face_get_implementation /* ENSO EDIT */
 };
 
 #if CAIRO_HAS_FC_FONT
@@ -3234,3 +3238,60 @@ _cairo_ft_font_reset_static_data (void)
 {
     _cairo_ft_unscaled_font_map_destroy ();
 }
+
+/* BEGIN ENSO EDIT */
+
+static int
+_file_exist_enso(const char *filename)
+{
+    FILE *f = fopen (filename, "rb");
+    if (f == NULL) {
+        return 0;
+    }
+    if (fclose(f) == EOF) {
+        return 0;
+    }
+    return 1;
+}
+
+cairo_font_face_t *
+_cairo_ft_font_face_create_for_filename_enso (const char *filename)
+{
+    cairo_ft_unscaled_font_t *unscaled;
+    cairo_ft_options_t ft_options;
+    cairo_status_t status;
+    cairo_font_face_t *font_face = (cairo_font_face_t *) &_cairo_font_face_nil;
+
+    if (!_file_exist_enso(filename)) {
+        goto DONE;
+    }
+    status = _cairo_ft_unscaled_font_create_internal ( FALSE, filename, 0, NULL, &unscaled );
+    if (unlikely (status)) {
+		return (cairo_font_face_t *)&_cairo_font_face_nil;
+	}
+
+    ft_options.load_flags = FT_LOAD_DEFAULT | FT_LOAD_NO_HINTING | FT_LOAD_NO_BITMAP;
+    ft_options.extra_flags = 0;
+    _cairo_font_options_init_default ( &ft_options.base );
+
+    font_face = _cairo_ft_font_face_create (unscaled, &ft_options);
+	_cairo_unscaled_font_destroy (&unscaled->base);
+
+DONE:    
+    return font_face;
+}
+
+static cairo_status_t
+_cairo_ft_font_face_create_for_toy_enso (cairo_toy_font_face_t *toy_face,
+				    cairo_font_face_t **font_face_out)
+{    
+    cairo_font_face_t *font_face = _cairo_ft_font_face_create_for_filename_enso (toy_face->family);
+    if (unlikely (!font_face)) {
+        *font_face_out = (cairo_font_face_t *)&_cairo_font_face_nil;
+        return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+    }
+    *font_face_out = font_face;
+    return CAIRO_STATUS_SUCCESS;
+}
+
+/* END ENSO EDIT */
