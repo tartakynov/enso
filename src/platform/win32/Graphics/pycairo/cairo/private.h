@@ -1,8 +1,8 @@
-/* -*- mode: C; c-basic-offset: 4 -*-
+/* -*- mode: C; c-basic-offset: 2 -*-
  *
  * Pycairo - Python bindings for cairo
  *
- * Copyright © 2003-2005 James Henstridge
+ * Copyright © 2003 James Henstridge, Steven Chaplin
  *
  * This library is free software; you can redistribute it and/or
  * modify it either under the terms of the GNU Lesser General Public
@@ -41,11 +41,14 @@
 #include "pycairo.h"
 
 
+extern PyObject *CairoError;
+
 extern PyTypeObject PycairoContext_Type;
 PyObject *PycairoContext_FromContext (cairo_t *ctx, PyTypeObject *type,
 				      PyObject *base);
 
 extern PyTypeObject PycairoFontFace_Type;
+extern PyTypeObject PycairoToyFontFace_Type;
 PyObject *PycairoFontFace_FromFontFace (cairo_font_face_t *font_face);
 
 extern PyTypeObject PycairoFontOptions_Type;
@@ -58,6 +61,8 @@ PyObject *PycairoMatrix_FromMatrix (const cairo_matrix_t *matrix);
 extern PyTypeObject PycairoPath_Type;
 PyObject *PycairoPath_FromPath (cairo_path_t *path);
 
+extern PyTypeObject PycairoPathiter_Type;
+
 extern PyTypeObject PycairoPattern_Type;
 extern PyTypeObject PycairoSolidPattern_Type;
 extern PyTypeObject PycairoSurfacePattern_Type;
@@ -65,7 +70,7 @@ extern PyTypeObject PycairoGradient_Type;
 extern PyTypeObject PycairoLinearGradient_Type;
 extern PyTypeObject PycairoRadialGradient_Type;
 PyObject *PycairoPattern_FromPattern (cairo_pattern_t *pattern,
-				      PyTypeObject *type);
+				      PyObject *base);
 
 extern PyTypeObject PycairoScaledFont_Type;
 PyObject *PycairoScaledFont_FromScaledFont (cairo_scaled_font_t *scaled_font);
@@ -81,29 +86,86 @@ extern PyTypeObject PycairoPDFSurface_Type;
 extern PyTypeObject PycairoPSSurface_Type;
 #endif
 
+#if CAIRO_HAS_SVG_SURFACE
+extern PyTypeObject PycairoSVGSurface_Type;
+#endif
+
 #if CAIRO_HAS_WIN32_SURFACE
 extern PyTypeObject PycairoWin32Surface_Type;
+extern PyTypeObject PycairoWin32PrintingSurface_Type;
+#endif
+
+#if CAIRO_HAS_XCB_SURFACE
+extern PyTypeObject PycairoXCBSurface_Type;
+#ifdef HAVE_XPYB
+#  include <xpyb.h>
+extern xpyb_CAPI_t *xpyb_CAPI;
+extern PyObject *xpybVISUALTYPE_type;
+#endif
+#endif
+
+#if CAIRO_HAS_XLIB_SURFACE
+extern PyTypeObject PycairoXlibSurface_Type;
 #endif
 
 PyObject *PycairoSurface_FromSurface (cairo_surface_t *surface,
-				      PyTypeObject *type,
-				      PyObject *base);
+                                      PyObject *base);
 
 int Pycairo_Check_Status (cairo_status_t status);
 
-/* useful macros from Python 2.4 */
-#if PY_MAJOR_VERSION == 2 && PY_MINOR_VERSION < 4
-#  define Py_RETURN_NONE return Py_INCREF(Py_None), Py_None
-#  define Py_RETURN_TRUE return Py_INCREF(Py_True), Py_True
-#  define Py_RETURN_FALSE return Py_INCREF(Py_False), Py_False
-#  define Py_CLEAR(op)				\
-        do {                            	\
-                if (op) {			\
-                        PyObject *tmp = (PyObject *)(op);	\
-                        (op) = NULL;		\
-                        Py_DECREF(tmp);		\
-                }				\
-        } while (0)
-#endif /* PY_MAJOR_VERSION */
+/* error checking macros */
+#define RETURN_NULL_IF_CAIRO_ERROR(status)    \
+  do {					      \
+    if (status != CAIRO_STATUS_SUCCESS) {     \
+      Pycairo_Check_Status (status);	      \
+      return NULL;			      \
+    }					      \
+  } while (0)
+
+#define RETURN_NULL_IF_CAIRO_CONTEXT_ERROR(ctx)    \
+  do {						   \
+    cairo_status_t status = cairo_status (ctx);	   \
+    if (status != CAIRO_STATUS_SUCCESS) {	   \
+      Pycairo_Check_Status (status);		   \
+      return NULL;				   \
+    }						   \
+  } while (0)
+
+#define RETURN_NULL_IF_CAIRO_PATTERN_ERROR(pattern)             \
+  do {								\
+    cairo_status_t status = cairo_pattern_status (pattern);	\
+    if (status != CAIRO_STATUS_SUCCESS) {			\
+      Pycairo_Check_Status (status);				\
+      return NULL;						\
+    }								\
+  } while (0)
+
+#define RETURN_NULL_IF_CAIRO_SURFACE_ERROR(surface)	        \
+  do {								\
+    cairo_status_t status = cairo_surface_status (surface);	\
+    if (status != CAIRO_STATUS_SUCCESS) {			\
+      Pycairo_Check_Status (status);				\
+      return NULL;						\
+    }								\
+  } while (0)
+
+#define RETURN_NULL_IF_CAIRO_SCALED_FONT_ERROR(sc_font)             \
+  do {								    \
+    cairo_status_t status = cairo_scaled_font_status (sc_font);	    \
+    if (status != CAIRO_STATUS_SUCCESS) {			    \
+      Pycairo_Check_Status (status);				    \
+      return NULL;						    \
+    }								    \
+  } while (0)
+
+#define RETURN_NULL_IF_CAIRO_FONT_OPTIONS_ERROR(fo)	        \
+  do {								\
+    cairo_status_t status = cairo_font_options_status (fo);	\
+    if (status != CAIRO_STATUS_SUCCESS) {			\
+      Pycairo_Check_Status (status);				\
+      return NULL;						\
+    }								\
+  } while (0)
+
 
 #endif /* _PYCAIRO_PRIVATE_H_ */
