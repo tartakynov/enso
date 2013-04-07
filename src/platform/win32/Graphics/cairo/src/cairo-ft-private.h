@@ -12,7 +12,7 @@
  *
  * You should have received a copy of the LGPL along with this library
  * in the file COPYING-LGPL-2.1; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin Street, Suite 500, Boston, MA 02110-1335, USA
  * You should have received a copy of the MPL along with this library
  * in the file COPYING-MPL-1.1
  *
@@ -37,17 +37,14 @@
 #ifndef CAIRO_FT_PRIVATE_H
 #define CAIRO_FT_PRIVATE_H
 
-#include <cairo-ft.h>
-#include <cairoint.h>
+#include "cairo-ft.h"
+#include "cairoint.h"
 
 #if CAIRO_HAS_FT_FONT
 
 CAIRO_BEGIN_DECLS
 
 typedef struct _cairo_ft_unscaled_font cairo_ft_unscaled_font_t;
-
-cairo_private cairo_bool_t
-_cairo_unscaled_font_is_ft (cairo_unscaled_font_t *unscaled_font);
 
 cairo_private cairo_bool_t
 _cairo_scaled_font_is_ft (cairo_scaled_font_t *scaled_font);
@@ -64,8 +61,13 @@ _cairo_ft_unscaled_font_lock_face (cairo_ft_unscaled_font_t *unscaled);
 cairo_private void
 _cairo_ft_unscaled_font_unlock_face (cairo_ft_unscaled_font_t *unscaled);
 
+cairo_private cairo_bool_t
+_cairo_ft_scaled_font_is_vertical (cairo_scaled_font_t *scaled_font);
+
+cairo_private unsigned int
+_cairo_ft_scaled_font_get_load_flags (cairo_scaled_font_t *scaled_font);
+
 CAIRO_END_DECLS
 
 #endif /* CAIRO_HAS_FT_FONT */
-
 #endif /* CAIRO_FT_PRIVATE_H */
