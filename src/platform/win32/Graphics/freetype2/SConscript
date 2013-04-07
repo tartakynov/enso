@@ -43,7 +43,7 @@ Import( "env" )
 env = env.Copy()
 
 cppDefines = {
-    "HUMANIZED_FT2_USE_DL_EXPORT" : "1",
+    "FT2_BUILD_LIBRARY" : "1",
     }
 
 # We're not using a glob.glob() here; this list of files was
@@ -58,6 +58,7 @@ sourceList = [
     "src/base/ftglyph.c",
     "src/base/ftbbox.c",
     "src/base/ftmm.c",
+    "src/base/fttype1.c",
     "src/autofit/autofit.c",      # auto-hinting module
     "src/sfnt/sfnt.c",            # SFNT files support
                                   # (required for TrueType)
