@@ -72,7 +72,9 @@ sourceList = [
     "pixman-trap.c",
     "pixman-utils.c",
     "pixman-sse2.c",
-    "pixman-mmx.c"
+    "pixman-mmx.c",
+    "pixman-arm.c",
+    "pixman-mips.c"
     ]
 
 ccPixmanFlags = [ 
