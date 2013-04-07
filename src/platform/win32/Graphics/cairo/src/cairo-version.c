@@ -42,7 +42,7 @@
 
 /* get the "real" version info instead of dummy cairo-version.h */
 #undef CAIRO_VERSION_H
-#include "../cairo-version.h"
+#include "cairo-version.h"
 
 /**
  * SECTION:cairo-version
