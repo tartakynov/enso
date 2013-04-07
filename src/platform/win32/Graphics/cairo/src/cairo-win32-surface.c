@@ -1676,9 +1676,11 @@ cairo_win32_surface_create (HDC hdc)
 
     cairo_format_t format;
     RECT rect;
-
-    /* Assume that everything coming in as a HDC is RGB24 */
-    format = CAIRO_FORMAT_RGB24;
+     
+    /* ENSO EDIT: changed the pixel format from its default 
+    * CAIRO_FORMAT_RGB24 to CAIRO_FORMAT_ARGB32, because that's what 
+    * TransparentWindow's underlying bitmap always uses internally. */
+    format = CAIRO_FORMAT_ARGB32;
 
     surface = malloc (sizeof (cairo_win32_surface_t));
     if (surface == NULL)
