@@ -72,14 +72,32 @@ BOTTOM_MARGIN_FACTOR = .20
 HEIGHT_FACTOR = 1 + TOP_MARGIN_FACTOR + BOTTOM_MARGIN_FACTOR
 
 # Colors
-WHITE = "#ffffff"
-DESIGNER_GREEN = "#9fbe57"
-DARK_GREEN = "#7f9845"
-BLACK = "#000000"
-
-# Add alpha values to get transparent backgrounds.
-DESCRIPTION_BACKGROUND_COLOR = DESIGNER_GREEN + "cc"
-MAIN_BACKGROUND_COLOR = BLACK + "d8"
+FONT_COLORS = {
+    "description" : { 
+        "line" : "#ffffff",
+        "help" : "#999999",
+        },
+    "autocomplete_active" : {     
+        "line" : "#ffffff",
+        "ins" : "#7f9845",
+        "help" : "#999999"
+        },
+    "autocomplete_inactive" : { 
+        "line" : "#9fbe57",
+        "ins" : "#7f9845",
+        },
+    "suggestion" : { 
+        "line" : "#9fbe57",
+        "ins" : "#7f9845",
+        "help" : "#999999",
+        },
+    }
+TRANSPARENCY = "D8"
+BACKGROUND_COLORS = {
+    "autocomplete" : "#000000" + TRANSPARENCY,
+    "description" : "#9fbe57" + TRANSPARENCY,
+    "suggestion" : "#000000" + TRANSPARENCY  
+}
 
 SMALL_SCALE = [ 12, 18, 24 ]
 LARGE_SCALE = [ 24, 28, 32, 36, 40, 44, 48 ]
@@ -87,12 +105,11 @@ DESCRIPTION_SCALE = SMALL_SCALE
 AUTOCOMPLETE_SCALE = LARGE_SCALE
 SUGGESTION_SCALE = SMALL_SCALE
 
-
 # ----------------------------------------------------------------------------
 # Style Registries
 # ----------------------------------------------------------------------------
 
-def _newLineStyleRegistry():
+def _newLineStyleRegistry(schema):
     """
     Creates a new style registry for laying out one of the quasimode's
     text lines.
@@ -108,30 +125,25 @@ def _newLineStyleRegistry():
     styles.add(
         "line",
         text_align = "left",
-        color = WHITE,
+        color = FONT_COLORS[schema]["line"],
         margin_top = "0pt",
         margin_bottom = "0pt",
         )
     styles.add(
         "help",
         font_style = "italic",
-        color = "#999999",
+        color = FONT_COLORS[schema]["help"],
         )
-    styles.add( "ins" )
-    styles.add( "alt" )
+    styles.add( "ins", color = FONT_COLORS[schema]["ins"] if "ins" in FONT_COLORS[schema] else "" )
     return styles
 
-
-_AUTOCOMPLETE_STYLES = _newLineStyleRegistry()
-_SUGGESTION_STYLES   = _newLineStyleRegistry()
-_DESCRIPTION_STYLES  = _newLineStyleRegistry()
-_DESCRIPTION_STYLES.update( "ins", color = DESIGNER_GREEN )
-_DESCRIPTION_STYLES.update( "alt", color = BLACK )
+_AUTOCOMPLETE_STYLES = _newLineStyleRegistry("autocomplete_active")
+_SUGGESTION_STYLES   = _newLineStyleRegistry("suggestion")
+_DESCRIPTION_STYLES  = _newLineStyleRegistry("description")
 
 XML_ALIASES = xmltextlayout.XmlMarkupTagAliases()
 XML_ALIASES.add( "line", baseElement = "block" )
 XML_ALIASES.add( "ins", baseElement = "inline" )
-XML_ALIASES.add( "alt", baseElement = "inline" )
 XML_ALIASES.add( "help", baseElement = "inline" )
 
 def _updateStyleSizes( styles, size ):
@@ -153,21 +165,15 @@ def _updateStyleSizes( styles, size ):
         )
 
 
-def _updateSuggestionColors( styles, active ):
+def _updateSuggestionColors( styles, schema ):
     """
     Sets the color scheme in styles ( a style registry )
     to the correct one for active or inactive suggestions,
     depending on the value of active ( a boolean ).
     """
 
-    if active:
-        styles.update( "line", color = WHITE )
-        styles.update( "ins", color = DARK_GREEN )
-        styles.update( "alt", color = WHITE )
-    else:
-        styles.update( "line", color = DESIGNER_GREEN )
-        styles.update( "ins", color = DARK_GREEN )
-        styles.update( "alt", color = DESIGNER_GREEN )
+    styles.update( "line", color = FONT_COLORS[schema]["line"] if "line" in FONT_COLORS[schema] else "" )
+    styles.update( "ins", color = FONT_COLORS[schema]["ins"] if "ins" in FONT_COLORS[schema] else "" )
 
 
 def _updateStyles( styles, scale, size ):
@@ -199,7 +205,7 @@ def retrieveAutocompleteStyles( active = True, size = LARGE_SCALE[-1] ):
     """
 
     styles =  _updateStyles( _AUTOCOMPLETE_STYLES, AUTOCOMPLETE_SCALE, size )
-    _updateSuggestionColors( styles, active )
+    _updateSuggestionColors( styles, "autocomplete_active" if active else "autocomplete_inactive" )
     return styles
 
 
@@ -209,7 +215,6 @@ def retrieveSuggestionStyles( active = True, size = SMALL_SCALE[-1] ):
     """
 
     styles = _updateStyles( _SUGGESTION_STYLES, SUGGESTION_SCALE, size )
-    _updateSuggestionColors( styles, active )
     return styles
 
 
@@ -326,10 +331,12 @@ class QuasimodeLayout:
         """
 
         self.newLines[0].background = \
-             xmltextlayout.colorHashToRgba( DESCRIPTION_BACKGROUND_COLOR )
-        for i in range( 1, len(self.newLines) ):
+             xmltextlayout.colorHashToRgba( BACKGROUND_COLORS["description"] )
+        self.newLines[1].background = \
+             xmltextlayout.colorHashToRgba( BACKGROUND_COLORS["autocomplete"] )
+        for i in range( 2, len(self.newLines) ):
             self.newLines[i].background = \
-                xmltextlayout.colorHashToRgba( MAIN_BACKGROUND_COLOR )
+                xmltextlayout.colorHashToRgba( BACKGROUND_COLORS["suggestion"] )
 
 
     def __newSmoothRags( self ):
