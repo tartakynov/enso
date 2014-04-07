@@ -12,7 +12,7 @@
  *
  * You should have received a copy of the LGPL along with this library
  * in the file COPYING-LGPL-2.1; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin Street, Suite 500, Boston, MA 02110-1335, USA
  * You should have received a copy of the MPL along with this library
  * in the file COPYING-MPL-1.1
  *
@@ -33,6 +33,8 @@
  * Contributor(s):
  *	Carl D. Worth <cworth@cworth.org>
  */
+
+#include "cairoint.h"
 
 #include "cairo-arc-private.h"
 
@@ -85,7 +87,7 @@ _arc_max_angle_for_tolerance_normalized (double tolerance)
 	{ M_PI / 10.0,  1.73863223499021216974e-08 },
 	{ M_PI / 11.0,  9.81410988043554039085e-09 },
     };
-    int table_size = (sizeof (table) / sizeof (table[0]));
+    int table_size = ARRAY_LENGTH (table);
 
     for (i = 0; i < table_size; i++)
 	if (table[i].error < tolerance)
@@ -114,7 +116,7 @@ _arc_segments_needed (double	      angle,
     major_axis = _cairo_matrix_transformed_circle_major_axis (ctm, radius);
     max_angle = _arc_max_angle_for_tolerance_normalized (tolerance / major_axis);
 
-    return (int) ceil (angle / max_angle);
+    return ceil (fabs (angle) / max_angle);
 }
 
 /* We want to draw a single spline approximating a circular arc radius
@@ -179,18 +181,20 @@ _cairo_arc_in_direction (cairo_t	  *cr,
 			 double		   angle_max,
 			 cairo_direction_t dir)
 {
+    if (cairo_status (cr))
+        return;
+
     while (angle_max - angle_min > 4 * M_PI)
 	angle_max -= 2 * M_PI;
 
     /* Recurse if drawing arc larger than pi */
     if (angle_max - angle_min > M_PI) {
 	double angle_mid = angle_min + (angle_max - angle_min) / 2.0;
-	/* XXX: Something tells me this block could be condensed. */
 	if (dir == CAIRO_DIRECTION_FORWARD) {
 	    _cairo_arc_in_direction (cr, xc, yc, radius,
 				     angle_min, angle_mid,
 				     dir);
-	    
+
 	    _cairo_arc_in_direction (cr, xc, yc, radius,
 				     angle_mid, angle_max,
 				     dir);
@@ -203,7 +207,7 @@ _cairo_arc_in_direction (cairo_t	  *cr,
 				     angle_min, angle_mid,
 				     dir);
 	}
-    } else {
+    } else if (angle_max != angle_min) {
 	cairo_matrix_t ctm;
 	int i, segments;
 	double angle, angle_step;
@@ -227,18 +231,22 @@ _cairo_arc_in_direction (cairo_t	  *cr,
 				angle,
 				angle + angle_step);
 	}
+    } else {
+	cairo_line_to (cr,
+		       xc + radius * cos (angle_min),
+		       yc + radius * sin (angle_min));
     }
 }
 
 /**
- * _cairo_arc_path_negative:
+ * _cairo_arc_path
  * @cr: a cairo context
  * @xc: X position of the center of the arc
  * @yc: Y position of the center of the arc
  * @radius: the radius of the arc
  * @angle1: the start angle, in radians
  * @angle2: the end angle, in radians
- * 
+ *
  * Compute a path for the given arc and append it onto the current
  * path within @cr. The arc will be accurate within the current
  * tolerance and given the current transformation.
@@ -266,8 +274,8 @@ _cairo_arc_path (cairo_t *cr,
  * @angle2: the end angle, in radians
  * @ctm: the current transformation matrix
  * @tolerance: the current tolerance value
- * @path: the path onto which th earc will be appended
- * 
+ * @path: the path onto which the arc will be appended
+ *
  * Compute a path for the given arc (defined in the negative
  * direction) and append it onto the current path within @cr. The arc
  * will be accurate within the current tolerance and given the current

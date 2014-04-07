@@ -74,7 +74,6 @@ static Pycairo_CAPI_t *Pycairo_CAPI = 0;
         
         pycairoSurface = PycairoSurface_FromSurface(
             surface,
-            &PycairoWin32Surface_Type,
             NULL
             );
 

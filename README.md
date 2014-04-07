@@ -2,7 +2,7 @@
 
 <img src="https://raw.github.com/tartakynov/enso/md-resources/screen.PNG" />
 
-Enso is an extensible, cross-platform quasimodal linguistic CLI written in Python by [Humanized, Inc](http://www.humanized.com). 
+Enso is an extensible, cross-platform quasimodal linguistic CLI originally written by [Humanized, Inc](http://www.humanized.com). 
 
 > Enso Launcher is designed to give you instant access to your applications and windows. With a few easily remembered keystrokes, you can launch an application, switch to a window by name, and control the state of your windows.
 
