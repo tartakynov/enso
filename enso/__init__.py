@@ -32,33 +32,47 @@
 #
 # ----------------------------------------------------------------------------
 
+webuiServer = None
+eventManager = None
+started = False
+
+def showWelcomeMessage():
+    msgXml = config.OPENING_MSG_XML
+    if msgXml != None:
+        messages.displayMessage( msgXml )
+
 def run():
     """
     Initializes and runs Enso.
     """
-
+    import logging
     from enso.events import EventManager
     from enso.quasimode import Quasimode
     from enso import events, plugins, config, quasimode, webui
-    import logging
+    global started, webuiServer, eventManager
 
     eventManager = EventManager.get()
     Quasimode.install( eventManager )
     plugins.install( eventManager )
 
-    def showWelcomeMessage():
-        msgXml = config.OPENING_MSG_XML
-        if msgXml != None:
-            messages.displayMessage( msgXml )
+    if not started:
+        eventManager.registerResponder( showWelcomeMessage, "init" )
+        try:
+            started = True
+            webuiServer = webui.start(eventManager)
+            eventManager.run()
+        except KeyboardInterrupt, e:
+            webuiServer.stop()
+        except Exception, e:
+            webuiServer.stop()
+            logging.error(e)
 
-    webui_server = webui.start(eventManager)
-
-    eventManager.registerResponder( showWelcomeMessage, "init" )
-
-    try:
-        eventManager.run()
-    except KeyboardInterrupt, e:
-        webui_server.stop()
-    except Exception, e:
-        logging.error(e)
-        webui_server.stop()
+def stop():
+    """
+    Performs safe stop.
+    """
+    global started
+    if started:
+        webuiServer.stop()
+        eventManager.stop()
+        started = False

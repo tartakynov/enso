@@ -24,12 +24,10 @@ options = None
 
 def tray_on_enso_quit(systray):
     enso.config.SYSTRAY_ICON.change_tooltip("Closing Enso...")
-    global options
     if not options.quiet:
         displayMessage(u"<p>Closing Enso...</p><caption>Enso</caption>")
-    time.sleep(1)
-    win32gui.Shell_NotifyIcon(win32gui.NIM_DELETE, systray.notify_id)
-    sys.exit(0)
+        time.sleep(1) # sleep for one second
+    enso.stop()
 
 def tray_on_enso_about(systray):
     displayMessage(enso.config.ABOUT_BOX_XML)
