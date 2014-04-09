@@ -13,7 +13,7 @@ def cmd_enso(ensoapi, cmd):
     if cmd == 'quit':
         displayMessage(u"<p>Closing <command>Enso</command>...</p><caption>enso</caption>")
         time.sleep(1)
-        sys.exit(0)
+        enso.stop()
     elif cmd == 'about':
         displayMessage(enso.config.ABOUT_BOX_XML)
     elif cmd == "commands":

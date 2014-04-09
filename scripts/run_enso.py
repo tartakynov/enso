@@ -7,6 +7,7 @@ import threading
 import logging
 import pythoncom
 import win32gui
+import win32con
 from win32com.shell import shell, shellcon
 
 import enso
@@ -18,12 +19,10 @@ ENSO_DIR = os.path.realpath(os.path.dirname(sys.argv[0]))
 ENSO_EXECUTABLE = os.path.join(ENSO_DIR, "enso.exe")
 ENSO_ICON = os.path.join(ENSO_DIR, "enso.ico")
 
-
 options = None
-
+systrayIcon = None
 
 def tray_on_enso_quit(systray):
-    enso.config.SYSTRAY_ICON.change_tooltip("Closing Enso...")
     if not options.quiet:
         displayMessage(u"<p>Closing Enso...</p><caption>Enso</caption>")
         time.sleep(1) # sleep for one second
@@ -80,20 +79,19 @@ def tray_on_enso_exec_at_startup(systray, get_state = False):
 def systray(enso_config):
     """ Tray-icon handling code. This have to be executed in its own thread
     """
-
+    global systrayIcon
+    
     logging.info( "Enso tray icon '%s'." % ENSO_ICON )
 
-    enso_config.SYSTRAY_ICON = SysTrayIcon(
+    systrayIcon = SysTrayIcon(
             ENSO_ICON,
             "Enso open-source",
             None,
             on_quit = tray_on_enso_quit)
-
-    enso_config.SYSTRAY_ICON.on_about = tray_on_enso_about
-    enso_config.SYSTRAY_ICON.on_doubleclick = tray_on_enso_about
-    enso_config.SYSTRAY_ICON.add_menu_item("Execute on &startup", tray_on_enso_exec_at_startup)
-    enso_config.SYSTRAY_ICON.main_thread()
-
+    systrayIcon.on_about = tray_on_enso_about
+    systrayIcon.on_doubleclick = tray_on_enso_about
+    systrayIcon.add_menu_item("Execute on &startup", tray_on_enso_exec_at_startup)
+    systrayIcon.main_thread()
 
 def process_options(argv):
     version = '1.0'
@@ -155,12 +153,13 @@ def main(argv = None):
         threading.Thread(target = systray, args = (enso.config,)).start()
 
     enso.run()
+    win32gui.PostMessage(systrayIcon.hwnd, win32con.WM_CLOSE, 0, 0)
 
     return 0
 
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv[1:]))
-
+   
 
 # vim:set tabstop=4 shiftwidth=4 expandtab:
