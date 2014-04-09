@@ -31,6 +31,7 @@
 #   enso
 #
 # ----------------------------------------------------------------------------
+import logging
 
 webuiServer = None
 eventManager = None
@@ -45,27 +46,23 @@ def run():
     """
     Initializes and runs Enso.
     """
-    import logging
-    from enso.events import EventManager
-    from enso.quasimode import Quasimode
-    from enso import events, plugins, config, quasimode, webui
-    global started, webuiServer, eventManager
-
-    eventManager = EventManager.get()
-    Quasimode.install( eventManager )
-    plugins.install( eventManager )
-
     if not started:
+        from enso.events import EventManager
+        from enso.quasimode import Quasimode as quasimode
+        from enso import events, plugins, config, webui
+        global started, webuiServer, eventManager
+
+        eventManager = EventManager.get()
+        quasimode.install( eventManager )
+        plugins.install( eventManager )
+
         eventManager.registerResponder( showWelcomeMessage, "init" )
+        webuiServer = webui.start(eventManager)
+        started = True
         try:
-            started = True
-            webuiServer = webui.start(eventManager)
             eventManager.run()
         except KeyboardInterrupt, e:
-            webuiServer.stop()
-        except Exception, e:
-            webuiServer.stop()
-            logging.error(e)
+            pass
 
 def stop():
     """
