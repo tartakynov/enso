@@ -31,6 +31,7 @@
 #   enso
 #
 # ----------------------------------------------------------------------------
+import time
 import logging
 
 webuiServer = None
@@ -47,11 +48,13 @@ def run():
     Initializes and runs Enso.
     """
     if not started:
+        messages.displayMessage("<p>Starting <command>Enso</command>...</p>")
+
         from enso.events import EventManager
         from enso.quasimode import Quasimode as quasimode
         from enso import events, plugins, config, webui
         global started, webuiServer, eventManager
-
+ 
         eventManager = EventManager.get()
         quasimode.install( eventManager )
         plugins.install( eventManager )
@@ -64,12 +67,28 @@ def run():
         except KeyboardInterrupt, e:
             pass
 
+timeSinceCreated = 0
+dismissed = False
+
 def stop():
     """
     Performs safe stop.
     """
     global started
-    if started:
-        webuiServer.stop()
-        eventManager.stop()
-        started = False
+    if started:        
+
+        def waitTick ( msPassed ):
+            global timeSinceCreated, dismissed
+            timeSinceCreated += msPassed
+            if timeSinceCreated >= 500 and not dismissed:
+                eventManager.triggerEvent( "dismissal" )
+                dismissed = True
+            if timeSinceCreated >= 1500 and dismissed:
+                eventManager.removeResponder( waitTick )
+                webuiServer.stop()
+                eventManager.stop()
+                dismissed = False
+                started = False
+                
+        messages.displayMessage(u"<p>Closing <command>Enso</command>...</p><caption>enso</caption>")
+        eventManager.registerResponder( waitTick, "timer" )        

@@ -11,8 +11,6 @@ from enso.messages import displayMessage
 def cmd_enso(ensoapi, cmd):
     """ Enso system command """
     if cmd == 'quit':
-        displayMessage(u"<p>Closing <command>Enso</command>...</p><caption>enso</caption>")
-        time.sleep(1)
         enso.stop()
     elif cmd == 'about':
         displayMessage(enso.config.ABOUT_BOX_XML)

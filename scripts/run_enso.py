@@ -23,9 +23,6 @@ options = None
 systrayIcon = None
 
 def tray_on_enso_quit(systray):
-    if not options.quiet:
-        displayMessage(u"<p>Closing Enso...</p><caption>Enso</caption>")
-        time.sleep(1) # sleep for one second
     enso.stop()
 
 def tray_on_enso_about(systray):
@@ -100,10 +97,8 @@ def process_options(argv):
     #parser.add_option("-l", "--log", action="store", dest="logfile", type="string", help="log output into auto-rotated log-file", metavar="FILE")
     #TODO: Implement more command line args
     parser.add_option("-l", "--log-level", action="store", dest="loglevel", default="ERROR", help="logging level (CRITICAL, ERROR, INFO, WARNING, DEBUG)")
-    parser.add_option("-n", "--no-splash", action="store_false", dest="show_splash", default=True, help="Do not show splash window")
     parser.add_option("-c", "--console", action="store_true", dest="show_console", default=False, help="Console messages")
     parser.add_option("-t", "--no-tray", action="store_false", dest="show_tray_icon", default=True, help="Hide tray icon")
-    parser.add_option("-q", "--quiet", action="store_true", dest="quiet", default=False, help="No information windows are shown on startup/shutdown")
     opts, args = parser.parse_args(argv)
     return opts, args
 
@@ -144,9 +139,6 @@ def main(argv = None):
         contents = open( ensorcPath, "r" ).read()
         compiledContents = compile( contents + "\n", ensorcPath, "exec" )
         exec compiledContents in {}, {}
-
-    if not opts.quiet and opts.show_splash:
-        displayMessage("<p>Starting <command>Enso</command>...</p>")
 
     if opts.show_tray_icon:
         # Execute tray-icon code in separate thread
